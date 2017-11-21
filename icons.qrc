@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>64.png</file>
+        <file>document-open.svg</file>
+        <file>document-save.svg</file>
+        <file>histogram.svg</file>
+        <file>convert.svg</file>
+    </qresource>
+</RCC>
