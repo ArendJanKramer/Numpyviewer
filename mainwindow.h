@@ -22,6 +22,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void loadCube(string path);
+
     virtual void closeEvent ( QCloseEvent * event );
 
 protected:

@@ -143,6 +143,10 @@ void MainWindow::loadCube(string path){
         ui->bandSelector->setMaximum(bands-1);
         ui->bandSelector->setEnabled(true);
 
+        QFileInfo info(QString::fromUtf8(path.c_str()));
+
+        this->setWindowTitle(info.absoluteDir().dirName());
+
         renderView(ui->bandSelector->value());
         qInfo("Done!");
         updateTextInToolbar();
@@ -180,6 +184,7 @@ void MainWindow::on_actionOpen_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "", tr("Numpy Files (*.npy)"));
     if (fileName != NULL){
+
         loadCube(fileName.toStdString());
     }
 }
