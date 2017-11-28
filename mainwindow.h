@@ -58,6 +58,7 @@ private:
     long bands;
     vector<float> loaded_data;
     float maxPixel;
+    float minPixel;
     HistoGram histoGram;
     ConvertWindow convertWindow;
 

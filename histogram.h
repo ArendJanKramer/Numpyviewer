@@ -19,6 +19,7 @@ public:
     explicit HistoGram(QWidget *parent = 0);
     ~HistoGram();
     void setMax(float max);
+    void setMin(float min);
     void setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int numbands);
     void mouseDoubleClickedEvent(QMouseEvent *event);
 
@@ -37,6 +38,7 @@ private:
     QLineSeries *differentiated_data_2;
 
     float maxValue;
+    float minValue;
 
 };
 

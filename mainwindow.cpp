@@ -59,7 +59,7 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event)
 
         int x = (int)img_coord_pt.x();
         int y = (int)img_coord_pt.y();
-        int index = (x+(y*image.width()))*ui->bandSelector->value();
+        int index = (x+(y*image.width()))*(ui->bandSelector->value()+1);
 
         if (index <= (int)loaded_data.size() && index >= 0 && x <= width && y <= height && y>=0 && x >= 0){
             float value = (float)loaded_data.at(index);
@@ -85,11 +85,14 @@ void MainWindow::renderView(long bandnum){
 
     float gain = 255.0/maxPixel;
 
+    float slope = (255.0) / (maxPixel - minPixel);
+    //output = (input - minPixel) * slope;
+
     for (int i = 0; i < (int)imageSize; i++) {
         if (bandnum == 0 && bands >= 225){
             data[i] = (uint8_t)(loaded_data[i+offset]*255);
         }else{
-            data[i] = (uint8_t)loaded_data[i+offset]*gain;
+            data[i] = (uint8_t)(loaded_data[i+offset]-minPixel)*slope;
         }
     }
 
@@ -132,14 +135,16 @@ void MainWindow::loadCube(string path){
 
         loaded_data = vector<float>(float_ptr, float_ptr + (width*height*bands));
         maxPixel = *max_element(loaded_data.begin(), loaded_data.end());
+        minPixel = *min_element(loaded_data.begin(), loaded_data.end());
 
-        qInfo("max : %f", maxPixel);
+        qInfo("max : %f min : %f", maxPixel, minPixel);
 
         QString message;
         message.sprintf("Bands : %lu Width : %lu Height : %lu Wordsize : %i", bands, width, height, wordSize);
         ui->statusBar->showMessage(message);
 
         histoGram.setMax(maxPixel);
+        histoGram.setMin(minPixel);
         ui->bandSelector->setMaximum(bands-1);
         ui->bandSelector->setEnabled(true);
 

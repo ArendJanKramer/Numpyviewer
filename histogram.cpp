@@ -64,6 +64,10 @@ void HistoGram::setMax(float max){
     maxValue = max;
 }
 
+
+void HistoGram::setMin(float min){
+    minValue = min;
+}
 // Update the data in histogram
 void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int numbands)
 {
@@ -100,7 +104,7 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     }
 
     axisX->setRange(0, numbands);
-    axisY->setRange(0, maxValue);
+    axisY->setRange(0-maxValue, maxValue);
     axisY2->setRange(0, 2);
 
 
