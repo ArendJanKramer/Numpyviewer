@@ -21,14 +21,18 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void loadCube(string path);
+    void load_cube(string path);
+
+    template <class T>
+    void load_and_convert_vector(cnpy::NpyArray *arr);
 
     virtual void closeEvent ( QCloseEvent * event );
+
 
 protected:
 
 private slots:
-    void renderView(long bandnum);
+    void render_channel(long bandnum);
 
     void updateTextInToolbar();
 
@@ -48,6 +52,10 @@ private slots:
 
     void on_actionconvert_triggered();
 
+    void on_actionChannels_first_triggered();
+
+    void on_actionUse_colormap_instead_of_grayscale_triggered();
+
 private:
     Ui::MainWindow *ui;
     //cnpy::NpyArray arr;
@@ -55,10 +63,14 @@ private:
 //    float *float_ptr;
     long height;
     long width;
-    long bands;
+    long num_channels;
+    bool channelsfirst;
+    bool use_colormap;
+
     vector<float> loaded_data;
-    float maxPixel;
-    float minPixel;
+    std::string loaded_path;
+    float max_pixel_in_file;
+    float min_pixel_in_file;
     HistoGram histoGram;
     ConvertWindow convertWindow;
 

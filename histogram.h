@@ -20,7 +20,7 @@ public:
     ~HistoGram();
     void setMax(float max);
     void setMin(float min);
-    void setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int numbands);
+    void setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int numbands, bool bandsfirst);
     void mouseDoubleClickedEvent(QMouseEvent *event);
 
 private:

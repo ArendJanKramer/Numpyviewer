@@ -69,7 +69,7 @@ void HistoGram::setMin(float min){
     minValue = min;
 }
 // Update the data in histogram
-void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int numbands)
+void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int numbands, bool bandsfirst)
 {
 
     QLineSeries *data = new QLineSeries();
@@ -79,7 +79,15 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     float max_diff = 0.0f;
 
     for (int i = 1; i < numbands; i++){
-        int index = x+(y*width)+(i*width*height);
+        int index = 0;
+        if (bandsfirst){
+            index = (unsigned long)(y*height+x)+(i * width * height);
+        }else{
+            index = (unsigned long)(x*width+y)*numbands+i;
+        }
+
+
+//        int index = x+(y*width)+(i*width*height);
 
         if (index >= (int)dataPtr->size())
             break;

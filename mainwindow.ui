@@ -75,7 +75,15 @@
     <addaction name="actionExport_as_PNG"/>
     <addaction name="actionconvert"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionChannels_first"/>
+    <addaction name="actionUse_colormap_instead_of_grayscale"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="enabled">
@@ -179,6 +187,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionChannels_first">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Channel dimension first (c*h*w)</string>
+   </property>
+  </action>
+  <action name="actionUse_colormap_instead_of_grayscale">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Use colormap instead of grayscale</string>
    </property>
   </action>
  </widget>

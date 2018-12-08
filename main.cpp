@@ -25,7 +25,7 @@ public:
         for (int i = 0; i < argc - 1; i++){
             MainWindow *w = new MainWindow;
             w->show();
-            w->loadCube(argv[i+1]);
+            w->load_cube(argv[i+1]);
         }
 
         exec();
@@ -40,7 +40,7 @@ public:
 
             MainWindow *w = new MainWindow;
             w->show();
-            w->loadCube(openEvent->file().toStdString().c_str());
+            w->load_cube(openEvent->file().toStdString().c_str());
 
         }
 

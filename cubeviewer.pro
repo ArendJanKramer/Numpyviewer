@@ -42,7 +42,8 @@ HEADERS += \
     envi_parser.h \
     convertwindow.h \
     ini.h \
-    INIReader.h
+    INIReader.h \
+    colormap.h
 
 FORMS += \
         mainwindow.ui \
@@ -61,7 +62,8 @@ QT += charts
 ICON = recycling.icns
 
 #CONFIG+= static
-
+CONFIG += c++14
 #QMAKE_LFLAGS += -static
+QMAKE_CXXFLAGS += -std=c++14
 
 RC_FILE = appicon.rc
