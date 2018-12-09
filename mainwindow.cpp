@@ -5,6 +5,7 @@
 #include "keyeventhandler.h"
 #include <QtCharts>
 #include "colormap.h"
+#include "graphics_view_zoom.h"
 
 using namespace QtCharts;
 using namespace std;
@@ -19,14 +20,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    ui->bandView->setMouseTracking(true);
+    Graphics_view_zoom* z = new Graphics_view_zoom(ui->imageCanvas);
+    z->set_modifiers(Qt::NoModifier);
+
+    ui->imageCanvas->setMouseTracking(true);
     ui->actionChannels_first->setChecked(channelsfirst);
-    ui->bandSelector->setHidden(true);
+    ui->channelSlider->setHidden(true);
 
     ui->actionUse_colormap_instead_of_grayscale->setChecked(use_colormap);
 
-    KeyEventHandler *handler = new KeyEventHandler(ui->bandView);
-    ui->bandView->installEventFilter(handler);
+    KeyEventHandler *handler = new KeyEventHandler(ui->imageCanvas);
+    ui->imageCanvas->installEventFilter(handler);
     connect(handler, &KeyEventHandler::mousePositionChanged, this, &MainWindow::mouseMovedEvent);
     connect(handler, &KeyEventHandler::mousePressed, this, &MainWindow::mousePressedEvent);
 }
@@ -39,15 +43,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::mousePressedEvent(QMouseEvent *event){
     if (!image.isNull() && ui->actionHistogram->isChecked()){
-        QPoint  local_pt = event->pos();//ui->bandView->mapFromGlobal(event->globalPos());
-        QPointF img_coord_pt = ui->bandView->mapToScene(local_pt);
+        QPoint  local_pt = event->pos();//ui->imageCanvas->mapFromGlobal(event->globalPos());
+        QPointF img_coord_pt = ui->imageCanvas->mapToScene(local_pt);
 
         short graphNum = 0;
         if(event->buttons() == Qt::RightButton)
             graphNum = 1;
 
-        int x = (int)img_coord_pt.x();
-        int y = (int)img_coord_pt.y();
+        int x = static_cast<int>(img_coord_pt.x());
+        int y = static_cast<int>(img_coord_pt.y());
 
         if (x <= width && y <= height && y>=0 && x >= 0){
             histoGram.setData(&loaded_data, graphNum, x, y, width, height, num_channels, channelsfirst);
@@ -62,22 +66,22 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event)
 {
     if (!image.isNull()){
 
-        QPoint  local_pt = event->pos();//ui->bandView->mapFromGlobal(event->globalPos());
-        QPointF img_coord_pt = ui->bandView->mapToScene(local_pt);
+        QPoint  local_pt = event->pos();//ui->imageCanvas->mapFromGlobal(event->globalPos());
+        QPointF img_coord_pt = ui->imageCanvas->mapToScene(local_pt);
 
-        int x = (int)img_coord_pt.x();
-        int y = (int)img_coord_pt.y();
+        int x = static_cast<int>(img_coord_pt.x());
+        int y = static_cast<int>(img_coord_pt.y());
 
         unsigned long index = 0;
 
         if (channelsfirst){
-            index = (unsigned long)(y*height+x)+(ui->bandSelector->value() * width * height);
+            index = static_cast<unsigned long>((y*height+x)+(ui->channelSlider->value() * width * height));
         }else{
-            index = (unsigned long)(x*width+y)*num_channels+ui->bandSelector->value();
+            index = static_cast<unsigned long>((x*width+y)*num_channels+ui->channelSlider->value());
         }
 
         if (index <= loaded_data.size() && x <= width && y <= height && y>=0 && x >= 0){
-            float value = (float)loaded_data.at(index);
+            float value = static_cast<float>(loaded_data.at(index));
 
             QString message;
             message.sprintf("(%d, %d) [%f]",x,y,value);
@@ -93,28 +97,28 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event)
 
 void MainWindow::render_channel(long channel_index){
 
-    long imageSize = loaded_data.size()/num_channels;
-    QByteArray bitmap(imageSize, '\0');
+    unsigned long imageSize = loaded_data.size()/static_cast<unsigned long>(num_channels);
+    QByteArray bitmap(static_cast<int>(imageSize), '\0');
 
-    float slope = (255.0) / (max_pixel_in_file - min_pixel_in_file);
+    float slope = (255.0f) / (max_pixel_in_file - min_pixel_in_file);
 
     // Build bitmap array
     unsigned long pixel_position = 0;
     int i = 0;
     for (int y = 0; y < height; y++){
         for (int x = 0; x < width; x++){
-            i = (int)(y*height+x);
+            i = y*height+x;
 
             if (channelsfirst){
-                pixel_position = (unsigned long)(y*height+x)+(channel_index * width * height);
+                pixel_position = static_cast<unsigned long>((y*height+x)+(channel_index * width * height));
             }else{
-                pixel_position = (unsigned long)(x*width+y)*num_channels+channel_index;
+                pixel_position = static_cast<unsigned long>((x*width+y)*num_channels+channel_index);
             }
 
             if (pixel_position > loaded_data.size()){
                 qInfo("Index ran out of bounds");
             }else{
-                bitmap[i] = (uint8_t)((loaded_data[pixel_position]-min_pixel_in_file)*slope);
+                bitmap[i] = static_cast<char>((loaded_data[pixel_position]-min_pixel_in_file)*slope);
             }
         }
     }
@@ -127,6 +131,8 @@ void MainWindow::render_channel(long channel_index){
             int val = static_cast<uint8_t>(bitmap.at(x+(y*width)));
 
             if (use_colormap){
+                while (val > 20)
+                    val = val - 20;
             // TODO clip val to 255
                 res = QColor(cmap_red[val], cmap_green[val], cmap_blue[val]);
             }else{
@@ -144,8 +150,8 @@ void MainWindow::render_channel(long channel_index){
     QPixmap item(QPixmap::fromImage(img));
     QGraphicsScene* scene = new QGraphicsScene;
     scene->addPixmap(item);
-    ui->bandView->setScene(scene);
-    resizeEvent(NULL);
+    ui->imageCanvas->setScene(scene);
+    resizeEvent(nullptr);
 
 }
 
@@ -161,19 +167,31 @@ void MainWindow::load_cube(string path){
     qInfo("Load cube");
     try{
         cnpy::NpyArray arr = cnpy::npy_load(path);
-        int wordSize = (int)arr.word_size;
-        char data_type = (char)arr.data_type;
+        int wordSize = static_cast<int>(arr.word_size);
+        char data_type = static_cast<char>(arr.data_type);
 
-        if (channelsfirst){
+        if (arr.shape.size() < 2){
+            QMessageBox msgBox;
+            msgBox.setText("This numpy array does not have enough dimensions, expecting at least 2");
+            msgBox.exec();
+            return;
+        }
+        else if (arr.shape.size() == 2){
+            qInfo("Array is 2d, assuming 1 channel");
+            height = static_cast<int>(arr.shape[0]);
+            width = static_cast<int>(arr.shape[1]);
+            num_channels = 1;
+        }
+        else if (channelsfirst){
             qInfo("Expecting channels*height*width shape");
-            height = (long)arr.shape[1];
-            width = (long)arr.shape[2];
-            num_channels = (long)arr.shape[0];
+            height = static_cast<int>(arr.shape[1]);
+            width = static_cast<int>(arr.shape[2]);
+            num_channels = static_cast<int>(arr.shape[0]);
         }else{
             qInfo("Expecting height*width*channels shape");
-            height = (long)arr.shape[0];
-            width = (long)arr.shape[1];
-            num_channels = (long)arr.shape[2];
+            height = static_cast<int>(arr.shape[0]);
+            width = static_cast<int>(arr.shape[1]);
+            num_channels = static_cast<int>(arr.shape[2]);
         }
 
         /* Data_types in numpy files
@@ -232,7 +250,7 @@ void MainWindow::load_cube(string path){
         // Put stats in GUI
         qInfo("Max pixel value in file: %f Min pixel value in file : %f", max_pixel_in_file, min_pixel_in_file);
         QString message;
-        message.sprintf("Bands : %lu Width : %lu Height : %lu Wordsize : %i", num_channels, width, height, wordSize);
+        message.sprintf("Bands : %i Width : %i Height : %i Wordsize : %i", num_channels, width, height, wordSize);
         qInfo("%s",message.toStdString().c_str());
         ui->statusBar->showMessage(message);
 
@@ -240,14 +258,15 @@ void MainWindow::load_cube(string path){
         histoGram.setMax(max_pixel_in_file);
         histoGram.setMin(min_pixel_in_file);
 
-        ui->bandSelector->setHidden(num_channels <= 1);
-        ui->bandSelector->setMaximum(num_channels-1);
-        ui->bandSelector->setEnabled(true);
+        ui->channelSlider->setHidden(num_channels <= 1);
+        ui->channelSlider->setMaximum(num_channels-1);
+        ui->channelSlider->setEnabled(true);
 
         QFileInfo info(QString::fromUtf8(path.c_str()));
         this->setWindowTitle(info.baseName());
-        render_channel(ui->bandSelector->value());
+        render_channel(ui->channelSlider->value());
         qInfo("Done!");
+        loaded_path = path;
         updateTextInToolbar();
     } catch(std::exception e){
         QMessageBox msgBox;
@@ -260,19 +279,19 @@ void MainWindow::load_cube(string path){
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
-    QGraphicsScene *scene = ui->bandView->scene();
-    if (scene != NULL){
-        QRectF bounds = ui->bandView->scene()->itemsBoundingRect();
-        ui->bandView->fitInView(bounds, Qt::KeepAspectRatio);
-        ui->bandView->centerOn(0, 0);
+    QGraphicsScene *scene = ui->imageCanvas->scene();
+    if (scene != nullptr){
+        QRectF bounds = ui->imageCanvas->scene()->itemsBoundingRect();
+        ui->imageCanvas->fitInView(bounds, Qt::KeepAspectRatio);
+        ui->imageCanvas->centerOn(0, 0);
     }
 }
 
 void MainWindow::updateTextInToolbar(){
-    ui->actionSelected_band->setText(QString("Channel : %1").arg(ui->bandSelector->value()));
+    ui->actionSelected_band->setText(QString("Channel : %1").arg(ui->channelSlider->value()));
 }
 
-void MainWindow::on_bandSelector_valueChanged(int value)
+void MainWindow::on_channelSlider_valueChanged(int value)
 {
     render_channel(value);
     updateTextInToolbar();
@@ -281,9 +300,8 @@ void MainWindow::on_bandSelector_valueChanged(int value)
 void MainWindow::on_actionOpen_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "", tr("Numpy Files (*.npy)"));
-    if (fileName != NULL){
-        loaded_path = fileName.toStdString();
-        load_cube(loaded_path);
+    if (fileName != nullptr){
+        load_cube(fileName.toStdString());
     }
 }
 
@@ -291,7 +309,7 @@ void MainWindow::on_actionExport_as_PNG_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export to PNG"), "", tr("PNG image (*.png)"));
     qInfo("%s", fileName.toUtf8().constData());
-    if (fileName != NULL){
+    if (fileName != nullptr){
         image.save(fileName);
     }
 }
@@ -326,6 +344,6 @@ void MainWindow::on_actionUse_colormap_instead_of_grayscale_triggered()
     qInfo("Colormap triggered");
     use_colormap = ui->actionUse_colormap_instead_of_grayscale->isChecked();
     if (loaded_path.length() > 3){
-       render_channel(ui->bandSelector->value());
+       render_channel(ui->channelSlider->value());
     }
 }

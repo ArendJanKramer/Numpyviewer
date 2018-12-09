@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0" colspan="2">
-     <widget class="QSlider" name="bandSelector">
+     <widget class="QSlider" name="channelSlider">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -41,7 +41,7 @@
      </widget>
     </item>
     <item row="1" column="0" colspan="2">
-     <widget class="QGraphicsView" name="bandView">
+     <widget class="QGraphicsView" name="imageCanvas">
       <property name="enabled">
        <bool>false</bool>
       </property>

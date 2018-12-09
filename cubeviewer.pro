@@ -32,7 +32,8 @@ SOURCES += \
     envi_parser.cpp \
     convertwindow.cpp \
     INIReader.cpp \
-    ini.c
+    ini.c \
+    graphics_view_zoom.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,7 +44,8 @@ HEADERS += \
     convertwindow.h \
     ini.h \
     INIReader.h \
-    colormap.h
+    colormap.h \
+    graphics_view_zoom.h
 
 FORMS += \
         mainwindow.ui \

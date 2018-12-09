@@ -42,7 +42,7 @@ private slots:
 
     void on_actionExport_as_PNG_triggered();
 
-    void on_bandSelector_valueChanged(int value);
+    void on_channelSlider_valueChanged(int value);
 
     void mouseMovedEvent(QMouseEvent *event);
 
@@ -61,9 +61,9 @@ private:
     //cnpy::NpyArray arr;
     QImage image;
 //    float *float_ptr;
-    long height;
-    long width;
-    long num_channels;
+    int height;
+    int width;
+    int num_channels;
     bool channelsfirst;
     bool use_colormap;
 
