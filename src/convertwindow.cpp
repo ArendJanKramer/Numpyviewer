@@ -21,19 +21,19 @@ void ConvertWindow::on_btnCaptureBrowse_clicked()
 {
     QString fileName = QFileDialog::getExistingDirectory(this, tr("Open Image"), "", QFileDialog::ShowDirsOnly
                                                          | QFileDialog::DontResolveSymlinks);
-    if (fileName != NULL){
+    if (fileName != nullptr){
         QFileInfo info1(fileName);
         QDir info2 = info1.absoluteDir();
         ui->captureFolder->setText(fileName);
-        ui->outputFile->setText(info2.absoluteFilePath("cube.npy"));
+        ui->outputFile->setText(info2.absoluteFilePath("file.npy"));
     }
 }
 
-void ConvertWindow::on_btnCubeBrowser_clicked()
+void ConvertWindow::on_btnNumpyBrowser_clicked()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export to numpy"), "", tr("Numpy file (*.npy)"));
     qInfo("%s", fileName.toUtf8().constData());
-    if (fileName != NULL){
+    if (fileName != nullptr){
         ui->outputFile->setText(fileName);
     }
 }
@@ -105,7 +105,7 @@ void ConvertWindow::on_btnConvert_clicked()
             Msgbox.exec();
     }else{
         QMessageBox Msgbox;
-            Msgbox.setText("Conversion to cube failed!");
+            Msgbox.setText("Conversion to numpy failed!");
             Msgbox.exec();
     }
 }
@@ -124,9 +124,9 @@ void ConvertWindow::on_btnBatch_clicked()
         QDir baseFolder = fileInfo.absoluteDir();
         baseFolder.cdUp();
 
-        QString destinationFile = baseFolder.absoluteFilePath("cube.npy");
+        QString destinationFile = baseFolder.absoluteFilePath("file.npy");
         if (ui->normalize->isChecked())
-            destinationFile = baseFolder.absoluteFilePath("cube-norm.npy");
+            destinationFile = baseFolder.absoluteFilePath("file-norm.npy");
 
         QString source = capFolder.absolutePath();
 

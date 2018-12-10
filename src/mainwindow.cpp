@@ -162,9 +162,9 @@ void MainWindow::load_and_convert_vector(cnpy::NpyArray *arr){
     loaded_data = std::vector<float>(type_data.begin(), type_data.end());
 }
 
-void MainWindow::load_cube(string path){
+void MainWindow::load_numpy_file(string path){
 
-    qInfo("Load cube");
+    qInfo("Load numpy");
     try{
         cnpy::NpyArray arr = cnpy::npy_load(path);
         int wordSize = static_cast<int>(arr.word_size);
@@ -301,7 +301,7 @@ void MainWindow::on_actionOpen_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "", tr("Numpy Files (*.npy)"));
     if (fileName != nullptr){
-        load_cube(fileName.toStdString());
+        load_numpy_file(fileName.toStdString());
     }
 }
 
@@ -335,7 +335,7 @@ void MainWindow::on_actionChannels_first_triggered()
     qInfo("Channel order triggered");
     channelsfirst = ui->actionChannels_first->isChecked();
     if (loaded_path.length() > 3){
-        load_cube(loaded_path);
+        load_numpy_file(loaded_path);
     }
 }
 

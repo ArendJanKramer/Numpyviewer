@@ -21,7 +21,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void load_cube(string path);
+    void load_numpy_file(string path);
 
     template <class T>
     void load_and_convert_vector(cnpy::NpyArray *arr);

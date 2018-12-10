@@ -10,10 +10,10 @@
 #endif
 
 
-class CubeViewer : public QApplication
+class NumpyViewer : public QApplication
 {
 public:
-    CubeViewer(int &argc, char **argv)
+    NumpyViewer(int &argc, char **argv)
         : QApplication(argc, argv)
     {
 
@@ -25,7 +25,7 @@ public:
         for (int i = 0; i < argc - 1; i++){
             MainWindow *w = new MainWindow;
             w->show();
-            w->load_cube(argv[i+1]);
+            w->load_numpy_file(argv[i+1]);
         }
 
         exec();
@@ -40,7 +40,7 @@ public:
 
             MainWindow *w = new MainWindow;
             w->show();
-            w->load_cube(openEvent->file().toStdString().c_str());
+            w->load_numpy_file(openEvent->file().toStdString().c_str());
 
         }
 
@@ -52,5 +52,5 @@ public:
 
 int main(int argc, char *argv[])
 {
-    CubeViewer a(argc, argv);
+    NumpyViewer a(argc, argv);
 }

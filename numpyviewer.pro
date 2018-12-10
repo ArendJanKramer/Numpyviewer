@@ -8,7 +8,7 @@ QT       += core gui #svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = cubeviewer
+TARGET = numpyviewer
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -24,28 +24,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    cnpy.cpp \
-    keyeventhandler.cpp \
-    histogram.cpp \
-    envi_parser.cpp \
-    convertwindow.cpp \
-    INIReader.cpp \
-    ini.c \
-    graphics_view_zoom.cpp
+        src/main.cpp \
+        src/mainwindow.cpp \
+    src/cnpy.cpp \
+    src/keyeventhandler.cpp \
+    src/histogram.cpp \
+    src/envi_parser.cpp \
+    src/convertwindow.cpp \
+    src/INIReader.cpp \
+    src/ini.c \
+    src/graphics_view_zoom.cpp
 
 HEADERS += \
-        mainwindow.h \
-    cnpy.h \
-    keyeventhandler.h \
-    histogram.h \
-    envi_parser.h \
-    convertwindow.h \
-    ini.h \
-    INIReader.h \
-    colormap.h \
-    graphics_view_zoom.h
+        src/mainwindow.h \
+    src/cnpy.h \
+    src/keyeventhandler.h \
+    src/histogram.h \
+    src/envi_parser.h \
+    src/convertwindow.h \
+    src/ini.h \
+    src/INIReader.h \
+    src/colormap.h \
+    src/graphics_view_zoom.h
 
 FORMS += \
         mainwindow.ui \

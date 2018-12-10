@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Cube viewer</string>
+   <string>Numpy viewer</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/artwork/icon.svg</normaloff>:/artwork/icon.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -127,13 +131,13 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/document-open.svg</normaloff>:/document-open.svg</iconset>
+     <normaloff>:/artwork/document-open.svg</normaloff>:/artwork/document-open.svg</iconset>
    </property>
    <property name="text">
     <string>Open</string>
    </property>
    <property name="toolTip">
-    <string>Open numpy cube</string>
+    <string>Open numpy file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -142,7 +146,7 @@
   <action name="actionExport_as_PNG">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/document-save.svg</normaloff>:/document-save.svg</iconset>
+     <normaloff>:/artwork/document-save.svg</normaloff>:/artwork/document-save.svg</iconset>
    </property>
    <property name="text">
     <string>Export as PNG</string>
@@ -153,10 +157,10 @@
   </action>
   <action name="actionSelected_band">
    <property name="text">
-    <string>Please open a cube</string>
+    <string>Please open a Numpy file</string>
    </property>
    <property name="toolTip">
-    <string>Please open a cube</string>
+    <string>Please open a numpy file</string>
    </property>
   </action>
   <action name="actionHistogram">
@@ -165,7 +169,7 @@
    </property>
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/histogram.svg</normaloff>:/histogram.svg</iconset>
+     <normaloff>:/artwork/histogram.svg</normaloff>:/artwork/histogram.svg</iconset>
    </property>
    <property name="text">
     <string>Histogram</string>
@@ -177,7 +181,7 @@
   <action name="actionconvert">
    <property name="icon">
     <iconset resource="icons.qrc">
-     <normaloff>:/convert.svg</normaloff>:/convert.svg</iconset>
+     <normaloff>:/artwork/convert.svg</normaloff>:/artwork/convert.svg</iconset>
    </property>
    <property name="text">
     <string>Convert ENVI to Numpy</string>

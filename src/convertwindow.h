@@ -19,7 +19,7 @@ public:
 private slots:
     void on_btnCaptureBrowse_clicked();
 
-    void on_btnCubeBrowser_clicked();
+    void on_btnNumpyBrowser_clicked();
 
     void on_btnConvert_clicked();
 
