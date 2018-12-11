@@ -82,9 +82,9 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event)
         unsigned long index = 0;
 
         if (channelsfirst){
-            index = static_cast<unsigned long>((y*height+x)+(ui->channelSlider->value() * width * height));
+            index = static_cast<unsigned long>((y*width+x)+(ui->channelSlider->value() * width * height));
         }else{
-            index = static_cast<unsigned long>((x*width+y)*num_channels+ui->channelSlider->value());
+            index = static_cast<unsigned long>((x*height+y)*num_channels+ui->channelSlider->value());
         }
 
         if (index <= loaded_data.size() && x <= width && y <= height && y>=0 && x >= 0){
