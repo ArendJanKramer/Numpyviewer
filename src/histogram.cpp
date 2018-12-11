@@ -85,10 +85,11 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     unsigned long index_2 = 0;
 
     for (int i = 0; i < numbands; i++){
+
         if (bandsfirst){
-            index = static_cast<unsigned long>((y*height+x)+(i * width * height));
+            index = static_cast<unsigned long>((y*width+x)+(i * width * height));
         }else{
-            index = static_cast<unsigned long>((x*width+y)*numbands+i);
+            index = static_cast<unsigned long>((x*height+y)*numbands+i);
         }
 
 
@@ -106,9 +107,9 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
         if (i > 2){
 
             if (bandsfirst){
-                index_2 = static_cast<unsigned long>((y*height+x)+((i - 1) * width * height));
+                index_2 = static_cast<unsigned long>((y*width+x)+((i - 1) * width * height));
             }else{
-                index_2 = static_cast<unsigned long>((x*width+y)*numbands+(i - 1));
+                index_2 = static_cast<unsigned long>((x*height+y)*numbands+(i - 1));
             }
 
             if (index_2 >= dataPtr->size())

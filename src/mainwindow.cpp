@@ -114,16 +114,16 @@ void MainWindow::render_channel(long channel_index){
     int i = 0;
     for (int y = 0; y < height; y++){
         for (int x = 0; x < width; x++){
-            i = y*height+x;
+            i = y*width+x;
 
             if (channelsfirst){
-                pixel_position = static_cast<unsigned long>((y*height+x)+(channel_index * width * height));
+                pixel_position = static_cast<unsigned long>((y*width+x)+(channel_index * width * height));
             }else{
-                pixel_position = static_cast<unsigned long>((x*width+y)*num_channels+channel_index);
+                pixel_position = static_cast<unsigned long>((x*height+y)*num_channels+channel_index);
             }
 
             if (pixel_position > loaded_data.size()){
-                qInfo("Index ran out of bounds");
+//                qInfo("Index ran out of bounds x=%i y=%i channel=%i pos=%lu size=%lu",x ,y, channel_index, pixel_position, loaded_data.size());
             }else{
                 bitmap[i] = static_cast<char>((loaded_data[pixel_position]-min_pixel_in_file)*slope);
             }
@@ -140,7 +140,6 @@ void MainWindow::render_channel(long channel_index){
             if (use_colormap){
                 while (val > 20)
                     val = val - 20;
-            // TODO clip val to 255
                 res = QColor(cmap_red[val], cmap_green[val], cmap_blue[val]);
             }else{
                 res = QColor(val, val, val);
@@ -191,6 +190,7 @@ char const* MainWindow::nameOfType(char type){
     }
 }
 
+// This function tries to load the file, and sets all corresponding settings
 void MainWindow::load_numpy_file(string path){
 
     qInfo("Load numpy");
@@ -224,7 +224,7 @@ void MainWindow::load_numpy_file(string path){
         }
 
         string shapeStr(nameOfType(data_type));
-        shapeStr.append(to_string(wordSize*4));
+        shapeStr.append(to_string(wordSize*8));
         if (data_type == 'f'){
             qInfo("Creating array of datatype [float] and wordsize %d", wordSize);
             if (wordSize == 4)
