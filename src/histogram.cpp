@@ -47,7 +47,7 @@ void HistoGram::mouseDoubleClickedEvent(QMouseEvent *event){
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export to PNG"), "", tr("PNG image (*.png)"));
     qInfo("%s", fileName.toUtf8().constData());
-    if (fileName != NULL){
+    if (fileName != nullptr){
         QImage image(chartView->sceneRect().size().toSize(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
         image.fill(Qt::transparent);                                              // Start all pixels transparent
 
@@ -57,6 +57,9 @@ void HistoGram::mouseDoubleClickedEvent(QMouseEvent *event){
 
         image.save(fileName);
     }
+
+    if (event != nullptr)
+        event->accept();
 
 }
 
@@ -75,44 +78,51 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     QLineSeries *data = new QLineSeries();
     QLineSeries *differentiated = new QLineSeries();
 
-    float max_base = 0.0f;
-    float max_diff = 0.0f;
+    double max_base = 0.0;
+    double max_diff = 0.0;
 
-    for (int i = 1; i < numbands; i++){
-        int index = 0;
+    unsigned long index = 0;
+    unsigned long index_2 = 0;
+
+    for (int i = 0; i < numbands; i++){
         if (bandsfirst){
-            index = (unsigned long)(y*height+x)+(i * width * height);
+            index = static_cast<unsigned long>((y*height+x)+(i * width * height));
         }else{
-            index = (unsigned long)(x*width+y)*numbands+i;
+            index = static_cast<unsigned long>((x*width+y)*numbands+i);
         }
 
 
 //        int index = x+(y*width)+(i*width*height);
 
-        if (index >= (int)dataPtr->size())
+        if (index >= dataPtr->size())
             break;
 
-        float base = dataPtr->at(index);
+        double base = static_cast<double>(dataPtr->at(index));
         data->append(i, base);
 
         if (base>max_base)
             max_base = base;
 
         if (i > 2){
-            int index_2 = x+(y*width)+((i-1)*width*height);
 
-            if (index_2 >= (int)dataPtr->size())
+            if (bandsfirst){
+                index_2 = static_cast<unsigned long>((y*height+x)+((i - 1) * width * height));
+            }else{
+                index_2 = static_cast<unsigned long>((x*width+y)*numbands+(i - 1));
+            }
+
+            if (index_2 >= dataPtr->size())
                 break;
 
-            float diff = dataPtr->at(index)/dataPtr->at(index_2);
+            double diff = static_cast<double>(dataPtr->at(index)/dataPtr->at(index_2));
             differentiated->append(i, diff);
             if (diff > max_diff)
                 max_diff = diff;
         }
     }
 
-    axisX->setRange(0, numbands);
-    axisY->setRange(0-maxValue, maxValue);
+    axisX->setRange(0, numbands-1);
+    axisY->setRange(0-static_cast<double>(maxValue), static_cast<double>(maxValue));
     axisY2->setRange(0, 2);
 
 

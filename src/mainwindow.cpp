@@ -10,6 +10,7 @@
 using namespace QtCharts;
 using namespace std;
 
+// Initizializer
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -29,6 +30,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->actionUse_colormap_instead_of_grayscale->setChecked(use_colormap);
 
+    dimensionLabel = new QLabel(this);
+    dimensionLabel->setText("");
+    ui->statusBar->addPermanentWidget(dimensionLabel,0);
+
     KeyEventHandler *handler = new KeyEventHandler(ui->imageCanvas);
     ui->imageCanvas->installEventFilter(handler);
     connect(handler, &KeyEventHandler::mousePositionChanged, this, &MainWindow::mouseMovedEvent);
@@ -41,6 +46,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+// This function handles the mouse clicks and drags in the canvas, and communicates with the histogram window
 void MainWindow::mousePressedEvent(QMouseEvent *event){
     if (!image.isNull() && ui->actionHistogram->isChecked()){
         QPoint  local_pt = event->pos();//ui->imageCanvas->mapFromGlobal(event->globalPos());
@@ -62,6 +68,7 @@ void MainWindow::mousePressedEvent(QMouseEvent *event){
     }
 }
 
+// This function display pixel values in the statusbar on mouse moves
 void MainWindow::mouseMovedEvent(QMouseEvent *event)
 {
     if (!image.isNull()){
@@ -84,7 +91,7 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event)
             float value = static_cast<float>(loaded_data.at(index));
 
             QString message;
-            message.sprintf("(%d, %d) [%f]",x,y,value);
+            message.sprintf("(%d, %d) [%g]",x,y,value);
             ui->statusBar->showMessage(message);
 
             if(event->buttons() == Qt::LeftButton || event->buttons() == Qt::RightButton)
@@ -94,7 +101,7 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event)
     }
 }
 
-
+// This function draws a channel onto the canvas
 void MainWindow::render_channel(long channel_index){
 
     unsigned long imageSize = loaded_data.size()/static_cast<unsigned long>(num_channels);
@@ -155,11 +162,33 @@ void MainWindow::render_channel(long channel_index){
 
 }
 
+// Load numpy data into vector of correct type, so data is interpret correctly
 template <class T>
 void MainWindow::load_and_convert_vector(cnpy::NpyArray *arr){
     T *data_ptr = arr->data<T>();
     vector<T> type_data = vector<T>(data_ptr, data_ptr + (width*height*num_channels));
     loaded_data = std::vector<float>(type_data.begin(), type_data.end());
+}
+
+// For display purposes
+char const* MainWindow::nameOfType(char type){
+    switch (type) {
+    case '?': return "bool";
+    case 'b': return "byte";
+    case 'B': return "ubyte";
+    case 'i': return "int";
+    case 'u': return "uint";
+    case 'f': return "float";
+    case 'c': return "Complex-float";
+    case 'm': return "Timedelta";
+    case 'M': return "Datetime";
+    case 'O': return "(Python) objects";
+    case 'S': return "Zero-terminated bytes";
+    case 'a': return "Zero-terminated bytes";
+    case 'U': return "Unicode";
+    case 'V': return "Raw data";
+    default: return "";
+    }
 }
 
 void MainWindow::load_numpy_file(string path){
@@ -194,21 +223,8 @@ void MainWindow::load_numpy_file(string path){
             num_channels = static_cast<int>(arr.shape[2]);
         }
 
-        /* Data_types in numpy files
-        '?' 	boolean
-        'b' 	(signed) byte
-        'B' 	unsigned byte
-        'i' 	(signed) integer
-        'u' 	unsigned integer
-        'f' 	floating-point
-        'c' 	complex-floating point
-        'm' 	timedelta
-        'M' 	datetime
-        'O' 	(Python) objects
-        'S', 'a' zero-terminated bytes (not recommended)
-        'U' 	Unicode string
-        'V' 	raw data (void)
-        */
+        string shapeStr(nameOfType(data_type));
+        shapeStr.append(to_string(wordSize*4));
         if (data_type == 'f'){
             qInfo("Creating array of datatype [float] and wordsize %d", wordSize);
             if (wordSize == 4)
@@ -229,7 +245,7 @@ void MainWindow::load_numpy_file(string path){
                 this->load_and_convert_vector<uint64_t>(&arr);
             else
                 return;
-        }else{
+        }else{ // Try to parse as signed ints
             qInfo("Creating array of datatype [signed int] and wordsize %d", wordSize);
             if (wordSize == 1)
                 this->load_and_convert_vector<int8_t>(&arr);
@@ -242,6 +258,15 @@ void MainWindow::load_numpy_file(string path){
             else
                 return;
         }
+
+        shapeStr.append(" (");
+        for (unsigned long i = 0; i < arr.shape.size(); i++){
+            shapeStr.append(to_string(arr.shape.at(i)));
+            if (i < arr.shape.size() - 1)
+                shapeStr.append(", ");
+        }
+        shapeStr.append(")");
+        dimensionLabel->setText(QString::fromUtf8(shapeStr.c_str()));
 
         // Calculate for contrast stretch
         max_pixel_in_file = *max_element(loaded_data.begin(), loaded_data.end());
@@ -285,6 +310,8 @@ void MainWindow::resizeEvent(QResizeEvent* event)
         ui->imageCanvas->fitInView(bounds, Qt::KeepAspectRatio);
         ui->imageCanvas->centerOn(0, 0);
     }
+    if (event != nullptr)
+        event->accept();
 }
 
 void MainWindow::updateTextInToolbar(){
@@ -317,6 +344,8 @@ void MainWindow::on_actionExport_as_PNG_triggered()
 void MainWindow::closeEvent( QCloseEvent *event )
 {
     histoGram.close();
+    if (event != nullptr)
+        event->accept();
 }
 
 void MainWindow::on_actionHistogram_triggered(bool checked)

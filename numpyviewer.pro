@@ -64,8 +64,6 @@ QT += charts
 ICON = recycling.icns
 
 #CONFIG+= static
-CONFIG += c++14
 #QMAKE_LFLAGS += -static
-QMAKE_CXXFLAGS += -std=c++14
 
 RC_FILE = appicon.rc

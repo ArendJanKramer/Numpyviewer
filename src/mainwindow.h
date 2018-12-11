@@ -28,6 +28,8 @@ public:
 
     virtual void closeEvent ( QCloseEvent * event );
 
+    char const* nameOfType(char type);
+
 
 protected:
 
@@ -73,6 +75,8 @@ private:
     float min_pixel_in_file;
     HistoGram histoGram;
     ConvertWindow convertWindow;
+
+    QLabel *dimensionLabel;
 
 };
 
