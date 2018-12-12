@@ -34,7 +34,7 @@ public:
 protected:
 
 private slots:
-    void render_channel(long bandnum);
+    void render_channel(int bandnum);
 
     void updateTextInToolbar();
 

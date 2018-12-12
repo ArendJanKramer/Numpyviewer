@@ -1,6 +1,7 @@
 #include "histogram.h"
 #include "ui_histogram.h"
 #include "keyeventhandler.h"
+#include "colormap.h"
 
 // Create views, initialise data and ui
 HistoGram::HistoGram(QWidget *parent) :
@@ -72,7 +73,7 @@ void HistoGram::setMin(float min){
     minValue = min;
 }
 // Update the data in histogram
-void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int numbands, bool bandsfirst)
+void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, bool channelsfirst)
 {
 
     QLineSeries *data = new QLineSeries();
@@ -84,14 +85,9 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     unsigned long index = 0;
     unsigned long index_2 = 0;
 
-    for (int i = 0; i < numbands; i++){
+    for (int i = 0; i < num_channels; i++){
 
-        if (bandsfirst){
-            index = static_cast<unsigned long>((y*width+x)+(i * width * height));
-        }else{
-            index = static_cast<unsigned long>((x*height+y)*numbands+i);
-        }
-
+        index = index_in_vector(channelsfirst, x, y, i, width, height, num_channels);
 
 //        int index = x+(y*width)+(i*width*height);
 
@@ -104,13 +100,8 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
         if (base>max_base)
             max_base = base;
 
-        if (i > 2){
-
-            if (bandsfirst){
-                index_2 = static_cast<unsigned long>((y*width+x)+((i - 1) * width * height));
-            }else{
-                index_2 = static_cast<unsigned long>((x*height+y)*numbands+(i - 1));
-            }
+        if (i > 1){
+            index_2 = index_in_vector(channelsfirst, x, y, (i - 1), width, height, num_channels);
 
             if (index_2 >= dataPtr->size())
                 break;
@@ -122,7 +113,7 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
         }
     }
 
-    axisX->setRange(0, numbands-1);
+    axisX->setRange(0, num_channels-1);
     axisY->setRange(0-static_cast<double>(maxValue), static_cast<double>(maxValue));
     axisY2->setRange(0, 2);
 

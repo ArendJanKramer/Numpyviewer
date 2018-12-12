@@ -79,13 +79,7 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event)
         int x = static_cast<int>(img_coord_pt.x());
         int y = static_cast<int>(img_coord_pt.y());
 
-        unsigned long index = 0;
-
-        if (channelsfirst){
-            index = static_cast<unsigned long>((y*width+x)+(ui->channelSlider->value() * width * height));
-        }else{
-            index = static_cast<unsigned long>((x*height+y)*num_channels+ui->channelSlider->value());
-        }
+        unsigned long index = index_in_vector(channelsfirst, x, y, ui->channelSlider->value(), width, height, num_channels);
 
         if (index <= loaded_data.size() && x <= width && y <= height && y>=0 && x >= 0){
             float value = static_cast<float>(loaded_data.at(index));
@@ -102,7 +96,7 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event)
 }
 
 // This function draws a channel onto the canvas
-void MainWindow::render_channel(long channel_index){
+void MainWindow::render_channel(int channel_index){
 
     unsigned long imageSize = loaded_data.size()/static_cast<unsigned long>(num_channels);
     QByteArray bitmap(static_cast<int>(imageSize), '\0');
@@ -110,22 +104,18 @@ void MainWindow::render_channel(long channel_index){
     float slope = (255.0f) / (max_pixel_in_file - min_pixel_in_file);
 
     // Build bitmap array
-    unsigned long pixel_position = 0;
+    unsigned long pixel_index = 0;
     int i = 0;
     for (int y = 0; y < height; y++){
         for (int x = 0; x < width; x++){
             i = y*width+x;
 
-            if (channelsfirst){
-                pixel_position = static_cast<unsigned long>((y*width+x)+(channel_index * width * height));
-            }else{
-                pixel_position = static_cast<unsigned long>((x*height+y)*num_channels+channel_index);
-            }
+            pixel_index = index_in_vector(channelsfirst, x, y, channel_index, width, height, num_channels);
 
-            if (pixel_position > loaded_data.size()){
+            if (pixel_index > loaded_data.size()){
 //                qInfo("Index ran out of bounds x=%i y=%i channel=%i pos=%lu size=%lu",x ,y, channel_index, pixel_position, loaded_data.size());
             }else{
-                bitmap[i] = static_cast<char>((loaded_data[pixel_position]-min_pixel_in_file)*slope);
+                bitmap[i] = static_cast<char>((loaded_data[pixel_index]-min_pixel_in_file)*slope);
             }
         }
     }
