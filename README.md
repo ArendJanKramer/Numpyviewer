@@ -17,4 +17,5 @@ Prerequisites:
  - Qt
  - QtCharts (add during installation, or with maintenance tool)
  
- ![Image of mainwindow](artwork/Screenshot mainwindow.png) |  ![Image of spectrum](artwork/Screenshot spectogram.png) 
+[[https://raw.githubusercontent.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer/master/artwork/Screenshot%20mainwindow.png|alt=main window]]
+[[https://raw.githubusercontent.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer/master/artwork/Screenshot%20spectogram.png|alt=spectrum]]
