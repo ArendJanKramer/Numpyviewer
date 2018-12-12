@@ -54,7 +54,9 @@ FORMS += \
 
 DISTFILES += \
     ../../../../64.png \
-    appicon.rc
+    appicon.rc \
+    artwork/Screenshot mainwindow.png \
+    artwork/Screenshot spectogram.png
 
 RESOURCES += \
     icons.qrc
