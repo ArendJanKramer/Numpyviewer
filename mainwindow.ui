@@ -198,7 +198,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Swap dimension 0 and 2</string>
+    <string>First axis as channel</string>
    </property>
   </action>
   <action name="actionUse_colormap_instead_of_grayscale">

@@ -6,8 +6,7 @@
 // Create views, initialise data and ui
 HistoGram::HistoGram(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::HistoGram)
-{
+    ui(new Ui::HistoGram) {
     ui->setupUi(this);
 
     chartView = new QChartView(this);
@@ -44,11 +43,11 @@ HistoGram::HistoGram(QWidget *parent) :
 
 }
 
-void HistoGram::mouseDoubleClickedEvent(QMouseEvent *event){
+void HistoGram::mouseDoubleClickedEvent(QMouseEvent *event) {
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export to PNG"), "", tr("PNG image (*.png)"));
     qInfo("%s", fileName.toUtf8().constData());
-    if (fileName != nullptr){
+    if (fileName != nullptr) {
         QImage image(chartView->sceneRect().size().toSize(), QImage::Format_ARGB32);  // Create the image with the exact size of the shrunk scene
         image.fill(Qt::transparent);                                              // Start all pixels transparent
 
@@ -64,17 +63,17 @@ void HistoGram::mouseDoubleClickedEvent(QMouseEvent *event){
 
 }
 
-void HistoGram::setMax(float max){
+void HistoGram::setMax(float max) {
     maxValue = max;
 }
 
 
-void HistoGram::setMin(float min){
+void HistoGram::setMin(float min) {
     minValue = min;
 }
+
 // Update the data in histogram
-void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, bool channelsfirst)
-{
+void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, bool channelsfirst) {
 
     QLineSeries *data = new QLineSeries();
     QLineSeries *differentiated = new QLineSeries();
@@ -85,11 +84,11 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     unsigned long index = 0;
     unsigned long index_2 = 0;
 
-    for (int i = 0; i < num_channels; i++){
+    for (int i = 0; i < num_channels; i++) {
 
         index = index_in_vector(channelsfirst, x, y, i, width, height, num_channels);
 
-//        int index = x+(y*width)+(i*width*height);
+        //        int index = x+(y*width)+(i*width*height);
 
         if (index >= dataPtr->size())
             break;
@@ -97,28 +96,28 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
         double base = static_cast<double>(dataPtr->at(index));
         data->append(i, base);
 
-        if (base>max_base)
+        if (base > max_base)
             max_base = base;
 
-        if (i > 1){
+        if (i > 1) {
             index_2 = index_in_vector(channelsfirst, x, y, (i - 1), width, height, num_channels);
 
             if (index_2 >= dataPtr->size())
                 break;
 
-            double diff = static_cast<double>(dataPtr->at(index)/dataPtr->at(index_2));
+            double diff = static_cast<double>(dataPtr->at(index) / dataPtr->at(index_2));
             differentiated->append(i, diff);
             if (diff > max_diff)
                 max_diff = diff;
         }
     }
 
-    axisX->setRange(0, num_channels-1);
-    axisY->setRange(0-static_cast<double>(maxValue), static_cast<double>(maxValue));
+    axisX->setRange(0, num_channels - 1);
+    axisY->setRange(0 - static_cast<double>(maxValue), static_cast<double>(maxValue));
     axisY2->setRange(0, 2);
 
 
-    if (graphNum == 0){
+    if (graphNum == 0) {
         chart->removeSeries(base_data);
         chart->removeSeries(differentiated_data);
 
@@ -128,7 +127,7 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
         chart->addSeries(base_data);
         chart->addSeries(differentiated_data);
 
-    } else if (graphNum == 1){
+    } else if (graphNum == 1) {
         chart->removeSeries(base_data_2);
         chart->removeSeries(differentiated_data_2);
 
@@ -146,7 +145,7 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     differentiated->attachAxis(axisY2);
 
 }
-HistoGram::~HistoGram()
-{
+
+HistoGram::~HistoGram() {
     delete ui;
 }

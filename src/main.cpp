@@ -10,29 +10,26 @@
 #endif
 
 
-class NumpyViewer : public QApplication
-{
+class NumpyViewer : public QApplication {
 public:
     NumpyViewer(int &argc, char **argv)
-        : QApplication(argc, argv)
-    {
+        : QApplication(argc, argv) {
 
-        if (argc <= 1 && !apple){
+        if (argc <= 1 && !apple) {
             MainWindow *w = new MainWindow;
             w->show();
         }
 
-        for (int i = 0; i < argc - 1; i++){
+        for (int i = 0; i < argc - 1; i++) {
             MainWindow *w = new MainWindow;
             w->show();
-            w->load_numpy_file(argv[i+1]);
+            w->load_numpy_file(argv[i + 1]);
         }
 
         exec();
     }
 
-    bool event(QEvent *event)
-    {
+    bool event(QEvent *event) {
         if (event->type() == QEvent::FileOpen) {
             QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
 
@@ -49,8 +46,6 @@ public:
 };
 
 
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     NumpyViewer a(argc, argv);
 }

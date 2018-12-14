@@ -6,7 +6,7 @@ inline bool fileExists(const std::string &name) {
 }
 
 template<typename TIdx>
-vector<TIdx> envi_parser::makeFloatCube(string cubepath, string darkrefpath, string whiterefpath, UInt16 width, UInt16 bands, UInt16 *cubeHeight, TIdx pixelGain) {
+vector <TIdx> envi_parser::makeFloatCube(string cubepath, string darkrefpath, string whiterefpath, UInt16 width, UInt16 bands, UInt16 *cubeHeight, TIdx pixelGain) {
 
     if (!fileExists(cubepath)) {
         printf("Can't find the cube file. Make sure you point at the correct location.\n");
@@ -22,9 +22,9 @@ vector<TIdx> envi_parser::makeFloatCube(string cubepath, string darkrefpath, str
     }
 
     // Setup matrices
-    vector<UInt16> image;
-    vector<UInt16> darkref;
-    vector<UInt16> whiteref;
+    vector <UInt16> image;
+    vector <UInt16> darkref;
+    vector <UInt16> whiteref;
 
     // Read files into 3d arrays
     size_t imageSize = readRawENVI(image, cubepath, width, bands);
@@ -36,9 +36,9 @@ vector<TIdx> envi_parser::makeFloatCube(string cubepath, string darkrefpath, str
     auto whiteHeight = static_cast<UInt16>(whiteSize / (bands * width));
 
     *cubeHeight = _cubeHeight;
-    vector<TIdx> imaged(image.begin(), image.end());
-    vector<TIdx> darkrefd(darkref.begin(), darkref.end());
-    vector<TIdx> whiterefd(whiteref.begin(), whiteref.end());
+    vector <TIdx> imaged(image.begin(), image.end());
+    vector <TIdx> darkrefd(darkref.begin(), darkref.end());
+    vector <TIdx> whiterefd(whiteref.begin(), whiteref.end());
 
     // Normalize image cube with dark ref and white ref
     normalizeENVI(imaged, darkrefd, whiterefd, (TIdx) bands, envi_parser::elBandInterleaveByLine,
@@ -55,12 +55,12 @@ vector<TIdx> envi_parser::makeFloatCube(string cubepath, string darkrefpath, str
 }
 
 template<typename TIdx>
-vector<TIdx> envi_parser::BILToTiled(vector<TIdx> bil, UInt16 tileWidth, UInt16 tileHeight, UInt16 bandCount) {
+vector <TIdx> envi_parser::BILToTiled(vector <TIdx> bil, UInt16 tileWidth, UInt16 tileHeight, UInt16 bandCount) {
 
-    if ((size_t) bil.size() % (size_t) (bandCount * tileWidth * tileHeight) != 0)
+    if ((size_t) bil.size() % (size_t)(bandCount * tileWidth * tileHeight) != 0)
         throw std::runtime_error("Source image height is not dividable by the number of bands.");
 
-    vector<TIdx> tiled(tileWidth * tileHeight * bandCount);
+    vector <TIdx> tiled(tileWidth * tileHeight * bandCount);
 
     int srcy = 0;
     for (int lineCnt = 0; lineCnt < tileHeight; lineCnt++) {
@@ -78,7 +78,7 @@ vector<TIdx> envi_parser::BILToTiled(vector<TIdx> bil, UInt16 tileWidth, UInt16 
 }
 
 template<typename T>
-size_t inline envi_parser::readToVector(const string &filename, vector<T> &buf) {
+size_t inline envi_parser::readToVector(const string &filename, vector <T> &buf) {
     std::ifstream ifs(filename, ios::binary);
     if (!ifs) throw std::runtime_error("Cannot open file: " + filename);
     ifs.seekg(0, std::ios::end);
@@ -92,8 +92,8 @@ size_t inline envi_parser::readToVector(const string &filename, vector<T> &buf) 
 }
 
 template<typename TIdx>
-size_t envi_parser::readRawENVI(vector<TIdx> &dst, string &filename, TIdx width, TIdx bands) {
-    vector<TIdx> buf;
+size_t envi_parser::readRawENVI(vector <TIdx> &dst, string &filename, TIdx width, TIdx bands) {
+    vector <TIdx> buf;
     auto size = (size_t) readToVector(filename, buf);
 
     if (size % (width * bands) != 0)
@@ -104,13 +104,13 @@ size_t envi_parser::readRawENVI(vector<TIdx> &dst, string &filename, TIdx width,
 }
 
 template<typename TIdx>
-void envi_parser::normalizeENVI(vector<TIdx> &cube, const vector<TIdx> &black, const vector<TIdx> &white, TIdx bands,
+void envi_parser::normalizeENVI(vector <TIdx> &cube, const vector <TIdx> &black, const vector <TIdx> &white, TIdx bands,
                                 enviLayout cubeLayout, TIdx cubeCols, TIdx cubeRows, TIdx whiteHeight, TIdx blackHeight) {
     if (cubeLayout != elBandInterleaveByLine)
         throw std::runtime_error("Specified cubeLayout not supported");
 
-    vector<TIdx> whiteRef(bands * cubeCols * whiteHeight);
-    vector<TIdx> blackRef(bands * cubeCols * blackHeight);
+    vector <TIdx> whiteRef(bands * cubeCols * whiteHeight);
+    vector <TIdx> blackRef(bands * cubeCols * blackHeight);
     //Take average for white
     for (UInt16 y = 0; y < whiteHeight; y++) {
         for (UInt16 b = 0; b < bands; b++) {
@@ -186,16 +186,16 @@ bool envi_parser::processNormalizedCapture(const string &cubepath, const string 
         UInt16 cubeHeight;
         typedef float outputType;
 
-        vector<outputType> tiled = makeFloatCube<float>(cubepath, darkrefpath, whiterefpath, width, bands, &cubeHeight, pixelGain);
+        vector <outputType> tiled = makeFloatCube<float>(cubepath, darkrefpath, whiterefpath, width, bands, &cubeHeight, pixelGain);
 
-        if (tiled.size() >= (size_t) (width * cubeHeight * 2lu)) {
-            vector<outputType> normalized(static_cast<unsigned long>(width * cubeHeight * (bands - 1)));
+        if (tiled.size() >= (size_t)(width * cubeHeight * 2lu)) {
+            vector <outputType> normalized(static_cast<unsigned long>(width * cubeHeight * (bands - 1)));
 
             for (UInt16 b = 0; b < (bands - 1); b++) {
                 unsigned int size = width * cubeHeight;
                 unsigned int offSet = b * size;
-                vector<outputType> bandA(tiled.begin() + offSet, tiled.begin() + offSet + size);
-                vector<outputType> bandB(tiled.begin() + offSet + size, tiled.begin() + offSet + 2 * size);
+                vector <outputType> bandA(tiled.begin() + offSet, tiled.begin() + offSet + size);
+                vector <outputType> bandB(tiled.begin() + offSet + size, tiled.begin() + offSet + 2 * size);
                 std::transform(bandB.begin(), bandB.end(), bandA.begin(), normalized.begin() + offSet, std::divides<outputType>());
             }
 

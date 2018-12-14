@@ -62,7 +62,7 @@ private:
     Ui::MainWindow *ui;
     //cnpy::NpyArray arr;
     QImage image;
-//    float *float_ptr;
+    //    float *float_ptr;
     int height;
     int width;
     int num_channels;
