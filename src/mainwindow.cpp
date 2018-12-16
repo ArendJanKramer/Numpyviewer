@@ -37,6 +37,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->imageCanvas->installEventFilter(handler);
     connect(handler, &KeyEventHandler::mousePositionChanged, this, &MainWindow::mouseMovedEvent);
     connect(handler, &KeyEventHandler::mousePressed, this, &MainWindow::mousePressedEvent);
+
+    QUrl imageUrl("https://raw.githubusercontent.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer/master/version.txt");
+    update_checker = new FileDownloader(imageUrl, this);
+    connect(update_checker, SIGNAL (downloaded()), this, SLOT (version_downloaded()));
+}
+
+void MainWindow::version_downloaded(){
+    try {
+        QString data = update_checker->downloadedData();
+        if (data.length() > 0){
+            QStringList list1 = data.split('|');
+            if (list1.length() == 2){
+                int version = list1.at(0).toInt();
+                if (version > app_version){
+                    QString text = "New version available!<br>New in this version:";
+                    text.append(list1.at(1));
+                    QMessageBox msgBox;
+                    msgBox.setWindowTitle("New version available");
+                    msgBox.setText(text);
+                    msgBox.exec();
+                }
+            }
+        }
+    } catch (exception e) {
+
+    }
 }
 
 MainWindow::~MainWindow() {

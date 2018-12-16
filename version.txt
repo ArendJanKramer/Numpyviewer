@@ -1,3 +1,4 @@
 1|<ul>
 	<li>Added updater</li>
 </ul>
+Download from https://bit.ly/2BrIVaP

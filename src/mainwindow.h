@@ -1,12 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#define app_version 1
+
 #include <QMainWindow>
 #include <QtDebug>
 #include "cnpy.h"
 #include <QMouseEvent>
 #include "histogram.h"
 #include "convertwindow.h"
+#include "filedownloader.h"
 
 using namespace std;
 
@@ -58,6 +61,7 @@ private slots:
 
     void on_actionUse_colormap_instead_of_grayscale_triggered();
 
+    void version_downloaded();
 private:
     Ui::MainWindow *ui;
     //cnpy::NpyArray arr;
@@ -75,7 +79,7 @@ private:
     float min_pixel_in_file;
     HistoGram histoGram;
     ConvertWindow convertWindow;
-
+    FileDownloader *update_checker;
     QLabel *dimensionLabel;
 
 };

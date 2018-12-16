@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui #svg
+QT       += core gui network #svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -33,7 +33,8 @@ SOURCES += \
     src/convertwindow.cpp \
     src/INIReader.cpp \
     src/ini.c \
-    src/graphics_view_zoom.cpp
+    src/graphics_view_zoom.cpp \
+    src/filedownloader.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -45,7 +46,8 @@ HEADERS += \
     src/ini.h \
     src/INIReader.h \
     src/colormap.h \
-    src/graphics_view_zoom.h
+    src/graphics_view_zoom.h \
+    src/filedownloader.h
 
 FORMS += \
         mainwindow.ui \
