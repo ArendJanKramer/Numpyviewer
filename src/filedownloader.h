@@ -1,0 +1,4 @@
+#ifndef FILEDOWNLOADER_H
+#define FILEDOWNLOADER_H
+
+#endif // FILEDOWNLOADER_H
