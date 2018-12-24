@@ -1,4 +1,6 @@
-1|<ul>
-	<li>Added updater</li>
+2|<ul>
+	<li>Bug fix in (H*W*C) mode</li>
+	<li>Added RGB/BGR viewing modes</li>
+	<li>Added navigation in folder using Ctrl-Arrow</li>
 </ul>
 Download from https://bit.ly/2BrIVaP
