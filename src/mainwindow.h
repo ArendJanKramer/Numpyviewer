@@ -10,6 +10,7 @@
 #include "histogram.h"
 #include "convertwindow.h"
 #include "filedownloader.h"
+#include "colormap.h"
 
 using namespace std;
 
@@ -57,11 +58,26 @@ private slots:
 
     void on_actionconvert_triggered();
 
-    void on_actionChannels_first_triggered();
-
-    void on_actionUse_colormap_instead_of_grayscale_triggered();
-
     void version_downloaded();
+
+    void updateSettingsMenu();
+
+    void on_order_C_H_W_triggered();
+
+    void on_order_H_W_C_triggered();
+
+    void on_color_Colormap_triggered();
+
+    void on_color_RGB_triggered();
+
+    void on_color_BGR_triggered();
+
+    void on_color_Grayscale_triggered();
+
+    void loadSibling(int offset);
+    void loadNext();
+    void loadPrevious();
+
 private:
     Ui::MainWindow *ui;
     //cnpy::NpyArray arr;
@@ -70,8 +86,9 @@ private:
     int height;
     int width;
     int num_channels;
-    bool channelsfirst;
-    bool use_colormap;
+
+    ChannelOrder channelOrder;
+    ColorMode colorMode;
 
     vector<float> loaded_data;
     std::string loaded_path;

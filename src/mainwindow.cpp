@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include "keyeventhandler.h"
 #include <QtCharts>
-#include "colormap.h"
 #include "graphics_view_zoom.h"
 
 using namespace QtCharts;
@@ -14,8 +13,8 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow) {
-    channelsfirst = false;
-    use_colormap = false;
+    colorMode = ColorMode::Grayscale;
+    channelOrder = ChannelOrder::H_W_C;
     loaded_path = "";
 
     ui->setupUi(this);
@@ -24,10 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
     z->set_modifiers(Qt::NoModifier);
 
     ui->imageCanvas->setMouseTracking(true);
-    ui->actionChannels_first->setChecked(channelsfirst);
-    ui->channelSlider->setHidden(true);
 
-    ui->actionUse_colormap_instead_of_grayscale->setChecked(use_colormap);
+    updateSettingsMenu();
+    ui->channelSlider->setHidden(true);
 
     dimensionLabel = new QLabel(this);
     dimensionLabel->setText("");
@@ -38,9 +36,25 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(handler, &KeyEventHandler::mousePositionChanged, this, &MainWindow::mouseMovedEvent);
     connect(handler, &KeyEventHandler::mousePressed, this, &MainWindow::mousePressedEvent);
 
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Left), this, SLOT(loadPrevious()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Right), this, SLOT(loadNext()));
+
     QUrl imageUrl("https://raw.githubusercontent.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer/master/version.txt");
     update_checker = new FileDownloader(imageUrl, this);
     connect(update_checker, SIGNAL (downloaded()), this, SLOT (version_downloaded()));
+}
+
+void MainWindow::updateSettingsMenu(){
+    ui->order_C_H_W->setChecked(channelOrder==ChannelOrder::C_H_W);
+    ui->order_H_W_C->setChecked(channelOrder==ChannelOrder::H_W_C);
+
+    ui->color_RGB->setEnabled(num_channels>=3);
+    ui->color_BGR->setEnabled(num_channels>=3);
+
+    ui->color_Grayscale->setChecked(colorMode==ColorMode::Grayscale);
+    ui->color_Colormap->setChecked(colorMode==ColorMode::Colormap);
+    ui->color_RGB->setChecked(colorMode==ColorMode::RGB);
+    ui->color_BGR->setChecked(colorMode==ColorMode::BGR);
 }
 
 void MainWindow::version_downloaded(){
@@ -84,7 +98,7 @@ void MainWindow::mousePressedEvent(QMouseEvent *event) {
         int y = static_cast<int>(img_coord_pt.y());
 
         if (x <= width && y <= height && y >= 0 && x >= 0) {
-            histoGram.setData(&loaded_data, graphNum, x, y, width, height, num_channels, channelsfirst);
+            histoGram.setData(&loaded_data, graphNum, x, y, width, height, num_channels, channelOrder);
             histoGram.show();
             histoGram.activateWindow();
         }
@@ -102,7 +116,8 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event) {
         int x = static_cast<int>(img_coord_pt.x());
         int y = static_cast<int>(img_coord_pt.y());
 
-        unsigned long index = index_in_vector(channelsfirst, x, y, ui->channelSlider->value(), width, height, num_channels);
+        bool channels_first = (channelOrder==ChannelOrder::C_H_W);
+        unsigned long index = index_in_vector(channels_first, x, y, ui->channelSlider->value(), width, height, num_channels);
 
         if (index <= loaded_data.size() && x <= width && y <= height && y >= 0 && x >= 0) {
             float value = static_cast<float>(loaded_data.at(index));
@@ -122,23 +137,37 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event) {
 void MainWindow::render_channel(int channel_index) {
 
     unsigned long imageSize = loaded_data.size() / static_cast<unsigned long>(num_channels);
-    QByteArray bitmap(static_cast<int>(imageSize), '\0');
+    QByteArray bitmap_ch1(static_cast<int>(imageSize), '\0');
+    QByteArray bitmap_ch2(static_cast<int>(imageSize), '\0');
+    QByteArray bitmap_ch3(static_cast<int>(imageSize), '\0');
 
     float slope = (255.0f) / (max_pixel_in_file - min_pixel_in_file);
 
     // Build bitmap array
-    unsigned long pixel_index = 0;
+    unsigned long pixel_index1 = 0;
+    unsigned long pixel_index2 = 0;
+    unsigned long pixel_index3 = 0;
+
     int i = 0;
+    bool channels_first = (channelOrder==ChannelOrder::C_H_W);
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             i = y * width + x;
+            if (pixel_index1 < loaded_data.size()){
+                pixel_index1 = index_in_vector(channels_first, x, y, channel_index, width, height, num_channels);
 
-            pixel_index = index_in_vector(channelsfirst, x, y, channel_index, width, height, num_channels);
+                if ((colorMode == ColorMode::RGB || colorMode == ColorMode::BGR) && num_channels >= 3){
+                    // Get RGB values
+                    pixel_index1 = index_in_vector(channels_first, x, y, 0, width, height, num_channels);
+                    pixel_index2 = index_in_vector(channels_first, x, y, 1, width, height, num_channels);
+                    pixel_index3 = index_in_vector(channels_first, x, y, 2, width, height, num_channels);
 
-            if (pixel_index > loaded_data.size()) {
-                //                qInfo("Index ran out of bounds x=%i y=%i channel=%i pos=%lu size=%lu",x ,y, channel_index, pixel_position, loaded_data.size());
-            } else {
-                bitmap[i] = static_cast<char>((loaded_data[pixel_index] - min_pixel_in_file) * slope);
+                    bitmap_ch1[i] = static_cast<char>((loaded_data[pixel_index1] - min_pixel_in_file) * slope);
+                    bitmap_ch2[i] = static_cast<char>((loaded_data[pixel_index2] - min_pixel_in_file) * slope);
+                    bitmap_ch3[i] = static_cast<char>((loaded_data[pixel_index3] - min_pixel_in_file) * slope);
+                }else{
+                    bitmap_ch1[i] = static_cast<char>((loaded_data[pixel_index1] - min_pixel_in_file) * slope);
+                }
             }
         }
     }
@@ -148,14 +177,24 @@ void MainWindow::render_channel(int channel_index) {
     QColor res;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            int val = static_cast<uint8_t>(bitmap.at(x + (y * width)));
+            int val1 = static_cast<uint8_t>(bitmap_ch1.at(x + (y * width)));
 
-            if (use_colormap) {
-                while (val > 20)
-                    val = val - 20;
-                res = QColor(cmap_red[val], cmap_green[val], cmap_blue[val]);
+            if (colorMode==ColorMode::Colormap) {
+                while (val1 > 20)
+                    val1 = val1 - 20;
+                res = QColor(cmap_red[val1], cmap_green[val1], cmap_blue[val1]);
             } else {
-                res = QColor(val, val, val);
+                if (colorMode == ColorMode::RGB && num_channels >= 3){
+                    int val2 = static_cast<uint8_t>(bitmap_ch2.at(x + (y * width)));
+                    int val3 = static_cast<uint8_t>(bitmap_ch3.at(x + (y * width)));
+                    res = QColor(val1, val2, val3);
+                }else if (colorMode == ColorMode::BGR && num_channels >= 3){
+                    int val2 = static_cast<uint8_t>(bitmap_ch2.at(x + (y * width)));
+                    int val3 = static_cast<uint8_t>(bitmap_ch3.at(x + (y * width)));
+                    res = QColor(val3, val2, val1);
+                }else{
+                    res = QColor(val1, val1, val1);
+                }
             }
             if (!res.isValid())
                 res = QColor(255, 0, 0);
@@ -237,7 +276,7 @@ void MainWindow::load_numpy_file(string path) {
             height = static_cast<int>(arr.shape[0]);
             width = static_cast<int>(arr.shape[1]);
             num_channels = 1;
-        } else if (channelsfirst) {
+        } else if (channelOrder==ChannelOrder::C_H_W) {
             qInfo("Expecting channels*height*width shape");
             height = static_cast<int>(arr.shape[1]);
             width = static_cast<int>(arr.shape[2]);
@@ -305,11 +344,17 @@ void MainWindow::load_numpy_file(string path) {
         qInfo("%s", message.toStdString().c_str());
         ui->statusBar->showMessage(message);
 
-        // Setup GUI constraints
+        // Setup histogram
         histoGram.setMax(max_pixel_in_file);
         histoGram.setMin(min_pixel_in_file);
 
-        ui->channelSlider->setHidden(num_channels <= 1);
+        // Switch back to garyscale if needed
+        if (colorMode == ColorMode::RGB || colorMode == ColorMode::BGR)
+            colorMode = num_channels >= 3 ? colorMode : ColorMode::Grayscale;
+        updateSettingsMenu();
+
+        // Channel slider
+        ui->channelSlider->setHidden(num_channels <= 1 || colorMode == ColorMode::RGB || colorMode == ColorMode::BGR);
         ui->channelSlider->setMaximum(num_channels - 1);
         ui->channelSlider->setEnabled(true);
 
@@ -355,6 +400,38 @@ void MainWindow::on_actionOpen_triggered() {
     }
 }
 
+void MainWindow::loadSibling(int offset){
+    if (loaded_path.length() > 3){
+        QFileInfo info(QString::fromUtf8(loaded_path.c_str()));
+        QDir directory = info.dir();
+        QStringList files = directory.entryList(QStringList() << "*.npy" << "*.NPY",QDir::Files, QDir::Name);
+        int i = 0;
+        for (i = 0; i < files.length(); i++) {
+            if (files[i] == info.fileName())
+                break;
+        }
+        i = i + offset;
+
+        if (i >= files.length())
+            i = 0;
+        if (i < 0)
+            i = files.length() - 1;
+
+        if (i >= 0 && i < files.length() && files.length() >= 1){
+            QString path = directory.filePath(files[i]);
+            load_numpy_file(path.toStdString());
+        }
+    }
+}
+
+void MainWindow::loadPrevious(){
+    loadSibling(-1);
+}
+
+void MainWindow::loadNext(){
+    loadSibling(1);
+}
+
 void MainWindow::on_actionExport_as_PNG_triggered() {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export to PNG"), "", tr("PNG image (*.png)"));
     qInfo("%s", fileName.toUtf8().constData());
@@ -378,18 +455,60 @@ void MainWindow::on_actionconvert_triggered() {
     convertWindow.show();
 }
 
-void MainWindow::on_actionChannels_first_triggered() {
-    qInfo("Channel order triggered");
-    channelsfirst = ui->actionChannels_first->isChecked();
+void MainWindow::on_order_C_H_W_triggered()
+{
+    qInfo("Set to mode C*H*W");
+    channelOrder = ChannelOrder::C_H_W;
+    updateSettingsMenu();
     if (loaded_path.length() > 3) {
         load_numpy_file(loaded_path);
     }
 }
 
-void MainWindow::on_actionUse_colormap_instead_of_grayscale_triggered() {
+void MainWindow::on_order_H_W_C_triggered()
+{
+    qInfo("Set to mode H*W*C");
+    channelOrder = ChannelOrder::H_W_C;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        load_numpy_file(loaded_path);
+    }
+}
+
+void MainWindow::on_color_Grayscale_triggered()
+{
+    colorMode = ColorMode::Grayscale;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        load_numpy_file(loaded_path);
+    }
+}
+
+void MainWindow::on_color_Colormap_triggered()
+{
     qInfo("Colormap triggered");
-    use_colormap = ui->actionUse_colormap_instead_of_grayscale->isChecked();
+    colorMode = ColorMode::Colormap;
+    updateSettingsMenu();
     if (loaded_path.length() > 3) {
         render_channel(ui->channelSlider->value());
     }
 }
+
+void MainWindow::on_color_RGB_triggered()
+{
+    colorMode = num_channels >= 3 ? ColorMode::RGB : colorMode;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        load_numpy_file(loaded_path);
+    }
+}
+
+void MainWindow::on_color_BGR_triggered()
+{
+    colorMode = num_channels >= 3 ? ColorMode::BGR : colorMode;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        load_numpy_file(loaded_path);
+    }
+}
+

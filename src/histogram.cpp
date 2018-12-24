@@ -73,7 +73,7 @@ void HistoGram::setMin(float min) {
 }
 
 // Update the data in histogram
-void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, bool channelsfirst) {
+void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, ChannelOrder channelOrder) {
 
     QLineSeries *data = new QLineSeries();
     QLineSeries *differentiated = new QLineSeries();
@@ -84,6 +84,7 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     unsigned long index = 0;
     unsigned long index_2 = 0;
 
+    bool channelsfirst = (channelOrder==ChannelOrder::C_H_W);
     for (int i = 0; i < num_channels; i++) {
 
         index = index_in_vector(channelsfirst, x, y, i, width, height, num_channels);

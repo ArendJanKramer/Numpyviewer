@@ -9,9 +9,11 @@ inline unsigned long index_in_vector(bool channelsfirst, int x, int y, int chann
     if (channelsfirst) {
         return static_cast<unsigned long>((y * width + x) + (channel * width * height));
     } else {
-        return static_cast<unsigned long>((x * height + y) * num_channels + channel);
+        return static_cast<unsigned long>((y * width + x) * num_channels + channel);
     }
-
 }
+
+enum class ChannelOrder { H_W_C, C_H_W};
+enum class ColorMode{ Grayscale, Colormap, RGB, BGR };
 
 #endif // COLORMAP_H

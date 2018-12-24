@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtCharts>
+#include "colormap.h"
 
 using namespace QtCharts;
 using namespace std;
@@ -20,7 +21,7 @@ public:
     ~HistoGram();
     void setMax(float max);
     void setMin(float min);
-    void setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, bool channelsfirst);
+    void setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, ChannelOrder channelOrder);
     void mouseDoubleClickedEvent(QMouseEvent *event);
 
 private:
