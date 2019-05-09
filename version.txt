@@ -1,6 +1,8 @@
 3|<ul>
-	<li>Bug fix in (H*W*C) mode</li>
-	<li>Added RGB/BGR viewing modes</li>
-	<li>Added navigation in folder using Ctrl-Arrow</li>
+  <li>Support for 4d numpy arrays</li>
+  <li>CMakeLists for cmake</li>
+  <li>Snapcraft files</li>
+  <li>ICNS icon for Mac app</li>
+  <li>ICO icon for Windows</li>
 </ul>
 Download from https://bit.ly/2BrIVaP
