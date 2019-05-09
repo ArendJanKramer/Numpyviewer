@@ -71,3 +71,6 @@ ICON = artwork/icon.icns
 #QMAKE_LFLAGS += -static
 
 RC_FILE = appicon.rc
+
+target.path = /usr/local/bin/
+INSTALLS += target

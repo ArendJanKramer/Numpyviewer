@@ -14,7 +14,7 @@ base: core18
 
 apps:
   numpyviewer:
-    command: bin/desktop-launch numpyviewer
+    command: bin/desktop-launch $SNAP/usr/local/bin/numpyviewer
     plugs:
       - network
       - network-bind
@@ -50,6 +50,7 @@ parts:
 
   application:
     plugin: qmake
+    project-files: ["numpyviewer.pro"]
     source: .
     build-packages:
       - qtbase5-dev
