@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>517</width>
-    <height>303</height>
+    <height>223</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,8 +20,9 @@
    <string>Conversion tool</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/64.png</normaloff>:/64.png</iconset>
+   <iconset resource="icons.qrc">
+    <normaloff>:/artwork/convert.svg</normaloff>:/artwork/convert.svg
+   </iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -127,6 +128,8 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

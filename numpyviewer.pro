@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network #svg
+QT       += core gui network svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -65,7 +65,7 @@ RESOURCES += \
 
 QT += charts
 
-ICON = recycling.icns
+ICON = artwork/icon.icns
 
 #CONFIG+= static
 #QMAKE_LFLAGS += -static

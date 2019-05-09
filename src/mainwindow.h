@@ -25,7 +25,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void load_numpy_file(string path);
+
+    void load_numpy_file(const string &path);
 
     template <class T>
     void load_and_convert_vector(cnpy::NpyArray *arr);
@@ -38,7 +39,8 @@ public:
 protected:
 
 private slots:
-    void render_channel(int bandnum);
+
+    void render_channel(int batch_index, int bandnum);
 
     void updateTextInToolbar();
 
@@ -78,6 +80,8 @@ private slots:
     void loadNext();
     void loadPrevious();
 
+    void on_batchSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
     //cnpy::NpyArray arr;
@@ -86,6 +90,7 @@ private:
     int height;
     int width;
     int num_channels;
+    int batch_size;
 
     ChannelOrder channelOrder;
     ColorMode colorMode;

@@ -1,4 +1,4 @@
-2|<ul>
+3|<ul>
 	<li>Bug fix in (H*W*C) mode</li>
 	<li>Added RGB/BGR viewing modes</li>
 	<li>Added navigation in folder using Ctrl-Arrow</li>

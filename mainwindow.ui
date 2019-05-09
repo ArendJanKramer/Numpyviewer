@@ -19,7 +19,43 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0" colspan="2">
+       <item row="1" column="0">
+           <widget class="QLabel" name="batchLabel">
+               <property name="text">
+                   <string>Batch index (n)</string>
+               </property>
+           </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+           <widget class="QGraphicsView" name="imageCanvas">
+               <property name="enabled">
+                   <bool>false</bool>
+               </property>
+               <property name="mouseTracking">
+                   <bool>true</bool>
+               </property>
+               <property name="interactive">
+                   <bool>false</bool>
+               </property>
+               <property name="dragMode">
+                   <enum>QGraphicsView::NoDrag</enum>
+               </property>
+           </widget>
+       </item>
+       <item row="2" column="0">
+           <widget class="QSlider" name="batchSlider">
+               <property name="enabled">
+                   <bool>false</bool>
+               </property>
+               <property name="maximum">
+                   <number>1</number>
+               </property>
+               <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+               </property>
+           </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
      <widget class="QSlider" name="channelSlider">
       <property name="enabled">
        <bool>false</bool>
@@ -44,19 +80,10 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="QGraphicsView" name="imageCanvas">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="mouseTracking">
-       <bool>true</bool>
-      </property>
-      <property name="interactive">
-       <bool>false</bool>
-      </property>
-      <property name="dragMode">
-       <enum>QGraphicsView::NoDrag</enum>
+       <item row="3" column="0">
+           <widget class="QLabel" name="channelLabel">
+               <property name="text">
+                   <string>Channel (c)</string>
       </property>
      </widget>
     </item>
@@ -214,7 +241,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>(C*H*W)</string>
+       <string>(N*C*H*W)</string>
+   </property>
+      <property name="shortcut">
+          <string>Ctrl+Z</string>
    </property>
   </action>
   <action name="order_H_W_C">
@@ -222,7 +252,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>(H*W*C)</string>
+       <string>(N*H*W*C)</string>
+   </property>
+      <property name="shortcut">
+          <string>Ctrl+X</string>
    </property>
   </action>
   <action name="color_Colormap">

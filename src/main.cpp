@@ -15,7 +15,7 @@ public:
     NumpyViewer(int &argc, char **argv)
         : QApplication(argc, argv) {
 
-        if (argc <= 1 && !apple) {
+        if (argc <= 1) {
             MainWindow *w = new MainWindow;
             w->show();
         }

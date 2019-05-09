@@ -37,7 +37,7 @@ HistoGram::HistoGram(QWidget *parent) :
     chart->addSeries(base_data_2);
     chart->addSeries(differentiated_data_2);
 
-    KeyEventHandler *handler = new KeyEventHandler(chartView);
+    auto *handler = new KeyEventHandler(chartView);
     chartView->installEventFilter(handler);
     connect(handler, &KeyEventHandler::mouseDoubleClicked, this, &HistoGram::mouseDoubleClickedEvent);
 
@@ -73,10 +73,10 @@ void HistoGram::setMin(float min) {
 }
 
 // Update the data in histogram
-void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, ChannelOrder channelOrder) {
+void HistoGram::setData(vector<float> *dataPtr, short graphNum, int n, int x, int y, int width, int height, int num_channels, ChannelOrder channelOrder) {
 
-    QLineSeries *data = new QLineSeries();
-    QLineSeries *differentiated = new QLineSeries();
+    auto *data = new QLineSeries();
+    auto *differentiated = new QLineSeries();
 
     double max_base = 0.0;
     double max_diff = 0.0;
@@ -84,29 +84,28 @@ void HistoGram::setData(vector<float> *dataPtr, short graphNum, int x, int y, in
     unsigned long index = 0;
     unsigned long index_2 = 0;
 
-    bool channelsfirst = (channelOrder==ChannelOrder::C_H_W);
     for (int i = 0; i < num_channels; i++) {
 
-        index = index_in_vector(channelsfirst, x, y, i, width, height, num_channels);
+        index = index_in_vector(channelOrder, n, x, y, i, width, height, num_channels);
 
         //        int index = x+(y*width)+(i*width*height);
 
         if (index >= dataPtr->size())
             break;
 
-        double base = static_cast<double>(dataPtr->at(index));
+        auto base = static_cast<double>(dataPtr->at(index));
         data->append(i, base);
 
         if (base > max_base)
             max_base = base;
 
         if (i > 1) {
-            index_2 = index_in_vector(channelsfirst, x, y, (i - 1), width, height, num_channels);
+            index_2 = index_in_vector(channelOrder, n, x, y, (i - 1), width, height, num_channels);
 
             if (index_2 >= dataPtr->size())
                 break;
 
-            double diff = static_cast<double>(dataPtr->at(index) / dataPtr->at(index_2));
+            auto diff = static_cast<double>(dataPtr->at(index) / dataPtr->at(index_2));
             differentiated->append(i, diff);
             if (diff > max_diff)
                 max_diff = diff;

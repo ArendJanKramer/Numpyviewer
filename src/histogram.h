@@ -21,7 +21,8 @@ public:
     ~HistoGram();
     void setMax(float max);
     void setMin(float min);
-    void setData(vector<float> *dataPtr, short graphNum, int x, int y, int width, int height, int num_channels, ChannelOrder channelOrder);
+
+    void setData(vector<float> *dataPtr, short graphNum, int n, int x, int y, int width, int height, int num_channels, ChannelOrder channelOrder);
     void mouseDoubleClickedEvent(QMouseEvent *event);
 
 private:

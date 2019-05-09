@@ -11,7 +11,12 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Spectogram</string>
+      <string>Spectogram over c (=channels)</string>
+  </property>
+     <property name="windowIcon">
+         <iconset resource="icons.qrc">
+             <normaloff>:/artwork/histogram.svg</normaloff>:/artwork/histogram.svg
+         </iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2"/>
@@ -22,11 +27,13 @@
      <x>0</x>
      <y>0</y>
      <width>535</width>
-     <height>21</height>
+        <height>22</height>
     </rect>
    </property>
   </widget>
  </widget>
- <resources/>
+    <resources>
+        <include location="icons.qrc"/>
+    </resources>
  <connections/>
 </ui>
