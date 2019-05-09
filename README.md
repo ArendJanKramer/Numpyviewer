@@ -16,6 +16,9 @@ https://github.com/benhoyt/inih
 Prerequisites:
  - Qt
  - QtCharts (add during installation, or with maintenance tool)
- 
+
+Prebuilt binaries:
+https://github.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer/releases/
+
 ![main window](https://raw.githubusercontent.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer/master/artwork/Screenshot%20mainwindow.png)
 ![spectrum](https://raw.githubusercontent.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer/master/artwork/Screenshot%20spectogram.png)
