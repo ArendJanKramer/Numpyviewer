@@ -149,9 +149,9 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event) {
 void MainWindow::render_channel(int batch_index, int channel_index) {
 
     unsigned long imageSize = loaded_data.size() / static_cast<unsigned long>(num_channels * batch_size);
-    std::vector<uint8_t> bitmap_ch1(static_cast<int>(imageSize), '\0');
-    std::vector<uint8_t> bitmap_ch2(static_cast<int>(imageSize), '\0');
-    std::vector<uint8_t> bitmap_ch3(static_cast<int>(imageSize), '\0');
+    std::vector<float> bitmap_ch1(static_cast<int>(imageSize), '\0');
+    std::vector<float> bitmap_ch2(static_cast<int>(imageSize), '\0');
+    std::vector<float> bitmap_ch3(static_cast<int>(imageSize), '\0');
 
     float max_pixel = max_pixel_in_file;
     float min_pixel = min_pixel_in_file;
@@ -180,11 +180,11 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
                     pixel_index3 = index_in_vector(used_channel_order, batch_index, x, y, 2, width, height,
                                                    num_channels);
 
-                    bitmap_ch1[i] = static_cast<char>((loaded_data[pixel_index1] - min_pixel) * slope);
-                    bitmap_ch2[i] = static_cast<char>((loaded_data[pixel_index2] - min_pixel) * slope);
-                    bitmap_ch3[i] = static_cast<char>((loaded_data[pixel_index3] - min_pixel) * slope);
+                    bitmap_ch1[i] = (loaded_data[pixel_index1] - min_pixel) * slope;
+                    bitmap_ch2[i] = (loaded_data[pixel_index2] - min_pixel) * slope;
+                    bitmap_ch3[i] = (loaded_data[pixel_index3] - min_pixel) * slope;
                 } else {
-                    bitmap_ch1[i] = static_cast<char>((loaded_data[pixel_index1] - min_pixel) * slope);
+                    bitmap_ch1[i] = (loaded_data[pixel_index1] - min_pixel) * slope;
                 }
             }
         }
@@ -195,9 +195,8 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
         auto mm = std::minmax_element(bitmap_ch1.begin(), bitmap_ch1.end());
         min_pixel = static_cast<float>(*mm.first);
         max_pixel = static_cast<float >(*mm.second);
-
         slope = (255.0f) / (max_pixel - min_pixel);
-        qInfo("Max pixel value in canvas: %f Min pixel value in canvas : %f", max_pixel, min_pixel);
+//        qInfo("Max pixel value in canvas: %f Min pixel value in canvas : %f", max_pixel, min_pixel);
     }
 
     // Draw all bitmap pixels
