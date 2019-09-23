@@ -15,25 +15,25 @@
 using namespace std;
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+
     ~MainWindow();
 
     void load_numpy_file(const string &path);
 
-    template <class T>
+    template<class T>
     void load_and_convert_vector(cnpy::NpyArray *arr);
 
-    virtual void closeEvent ( QCloseEvent * event );
+    virtual void closeEvent(QCloseEvent *event);
 
-    char const* nameOfType(char type);
+    char const *nameOfType(char type);
 
 
 protected:
@@ -44,7 +44,7 @@ private slots:
 
     void updateTextInToolbar();
 
-    void resizeEvent(QResizeEvent* event);
+    void resizeEvent(QResizeEvent *event);
 
     void on_actionOpen_triggered();
 
@@ -77,10 +77,20 @@ private slots:
     void on_color_Grayscale_triggered();
 
     void loadSibling(int offset);
+
     void loadNext();
+
     void loadPrevious();
 
     void on_batchSlider_valueChanged(int value);
+
+    void on_order_automatic_triggered();
+
+    void auto_set_channel_order(cnpy::NpyArray &arr);
+
+    void on_contrast_array_triggered();
+
+    void on_contrast_canvas_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -92,8 +102,10 @@ private:
     int num_channels;
     int batch_size;
 
-    ChannelOrder channelOrder;
+    ChannelOrder user_selected_order;
+    ChannelOrder used_channel_order;
     ColorMode colorMode;
+    ContrastMode contrastMode;
 
     vector<float> loaded_data;
     std::string loaded_path;

@@ -14,7 +14,9 @@ MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow) {
     colorMode = ColorMode::Grayscale;
-    channelOrder = ChannelOrder::H_W_C;
+    contrastMode = ContrastMode::Array;
+    user_selected_order = ChannelOrder::Auto;
+    used_channel_order = ChannelOrder::H_W_C;
     loaded_path = "";
 
     ui->setupUi(this);
@@ -49,8 +51,9 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::updateSettingsMenu() {
-    ui->order_C_H_W->setChecked(channelOrder == ChannelOrder::C_H_W);
-    ui->order_H_W_C->setChecked(channelOrder == ChannelOrder::H_W_C);
+    ui->order_C_H_W->setChecked(user_selected_order == ChannelOrder::C_H_W);
+    ui->order_H_W_C->setChecked(user_selected_order == ChannelOrder::H_W_C);
+    ui->order_automatic->setChecked(user_selected_order == ChannelOrder::Auto);
 
     ui->color_RGB->setEnabled(num_channels >= 3);
     ui->color_BGR->setEnabled(num_channels >= 3);
@@ -59,6 +62,9 @@ void MainWindow::updateSettingsMenu() {
     ui->color_Colormap->setChecked(colorMode == ColorMode::Colormap);
     ui->color_RGB->setChecked(colorMode == ColorMode::RGB);
     ui->color_BGR->setChecked(colorMode == ColorMode::BGR);
+
+    ui->contrast_array->setChecked(contrastMode == ContrastMode::Array);
+    ui->contrast_canvas->setChecked(contrastMode == ContrastMode::Canvas);
 }
 
 void MainWindow::version_downloaded() {
@@ -103,7 +109,7 @@ void MainWindow::mousePressedEvent(QMouseEvent *event) {
         int n = ui->batchSlider->value();
 
         if (x <= width && y <= height && y >= 0 && x >= 0) {
-            histoGram.setData(&loaded_data, graphNum, n, x, y, width, height, num_channels, channelOrder);
+            histoGram.setData(&loaded_data, graphNum, n, x, y, width, height, num_channels, used_channel_order);
             histoGram.show();
             histoGram.activateWindow();
         }
@@ -122,7 +128,8 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event) {
         int y = static_cast<int>(img_coord_pt.y());
         int n = ui->batchSlider->value();
 
-        unsigned long index = index_in_vector(channelOrder, n, x, y, ui->channelSlider->value(), width, height, num_channels);
+        unsigned long index = index_in_vector(used_channel_order, n, x, y, ui->channelSlider->value(), width, height,
+                                              num_channels);
 
         if (index <= loaded_data.size() && x <= width && y <= height && y >= 0 && x >= 0) {
             auto value = static_cast<float>(loaded_data.at(index));
@@ -142,11 +149,14 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event) {
 void MainWindow::render_channel(int batch_index, int channel_index) {
 
     unsigned long imageSize = loaded_data.size() / static_cast<unsigned long>(num_channels * batch_size);
-    QByteArray bitmap_ch1(static_cast<int>(imageSize), '\0');
-    QByteArray bitmap_ch2(static_cast<int>(imageSize), '\0');
-    QByteArray bitmap_ch3(static_cast<int>(imageSize), '\0');
+    std::vector<uint8_t> bitmap_ch1(static_cast<int>(imageSize), '\0');
+    std::vector<uint8_t> bitmap_ch2(static_cast<int>(imageSize), '\0');
+    std::vector<uint8_t> bitmap_ch3(static_cast<int>(imageSize), '\0');
 
-    float slope = (255.0f) / (max_pixel_in_file - min_pixel_in_file);
+    float max_pixel = max_pixel_in_file;
+    float min_pixel = min_pixel_in_file;
+
+    float slope = (255.0f) / (max_pixel - min_pixel);
 
     // Build bitmap array
     unsigned long pixel_index1 = 0;
@@ -158,22 +168,36 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
         for (int x = 0; x < width; x++) {
             i = y * width + x;
             if (pixel_index1 < loaded_data.size()) {
-                pixel_index1 = index_in_vector(channelOrder, batch_index, x, y, channel_index, width, height, num_channels);
+                pixel_index1 = index_in_vector(used_channel_order, batch_index, x, y, channel_index, width, height,
+                                               num_channels);
 
                 if ((colorMode == ColorMode::RGB || colorMode == ColorMode::BGR) && num_channels >= 3) {
                     // Get RGB values
-                    pixel_index1 = index_in_vector(channelOrder, batch_index, x, y, 0, width, height, num_channels);
-                    pixel_index2 = index_in_vector(channelOrder, batch_index, x, y, 1, width, height, num_channels);
-                    pixel_index3 = index_in_vector(channelOrder, batch_index, x, y, 2, width, height, num_channels);
+                    pixel_index1 = index_in_vector(used_channel_order, batch_index, x, y, 0, width, height,
+                                                   num_channels);
+                    pixel_index2 = index_in_vector(used_channel_order, batch_index, x, y, 1, width, height,
+                                                   num_channels);
+                    pixel_index3 = index_in_vector(used_channel_order, batch_index, x, y, 2, width, height,
+                                                   num_channels);
 
-                    bitmap_ch1[i] = static_cast<char>((loaded_data[pixel_index1] - min_pixel_in_file) * slope);
-                    bitmap_ch2[i] = static_cast<char>((loaded_data[pixel_index2] - min_pixel_in_file) * slope);
-                    bitmap_ch3[i] = static_cast<char>((loaded_data[pixel_index3] - min_pixel_in_file) * slope);
+                    bitmap_ch1[i] = static_cast<char>((loaded_data[pixel_index1] - min_pixel) * slope);
+                    bitmap_ch2[i] = static_cast<char>((loaded_data[pixel_index2] - min_pixel) * slope);
+                    bitmap_ch3[i] = static_cast<char>((loaded_data[pixel_index3] - min_pixel) * slope);
                 } else {
-                    bitmap_ch1[i] = static_cast<char>((loaded_data[pixel_index1] - min_pixel_in_file) * slope);
+                    bitmap_ch1[i] = static_cast<char>((loaded_data[pixel_index1] - min_pixel) * slope);
                 }
             }
         }
+    }
+
+    // Re-stretch contrast for current canvas
+    if (contrastMode == ContrastMode::Canvas) {
+        auto mm = std::minmax_element(bitmap_ch1.begin(), bitmap_ch1.end());
+        min_pixel = static_cast<float>(*mm.first);
+        max_pixel = static_cast<float >(*mm.second);
+
+        slope = (255.0f) / (max_pixel - min_pixel);
+        qInfo("Max pixel value in canvas: %f Min pixel value in canvas : %f", max_pixel, min_pixel);
     }
 
     // Draw all bitmap pixels
@@ -197,6 +221,9 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
                     int val3 = static_cast<uint8_t>(bitmap_ch3.at(x + (y * width)));
                     res = QColor(val3, val2, val1);
                 } else {
+                    if (contrastMode == ContrastMode::Canvas) {
+                        val1 = static_cast<uint8_t>((bitmap_ch1.at(x + (y * width)) - min_pixel) * slope);
+                    }
                     res = QColor(val1, val1, val1);
                 }
             }
@@ -215,6 +242,26 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
     ui->imageCanvas->setScene(scene);
     resizeEvent(nullptr);
 
+}
+
+void MainWindow::auto_set_channel_order(cnpy::NpyArray &arr) {
+    qInfo() << "Determining best channel order for shape " << QString::fromStdString(arr.shape_str());
+    int num_dimensions = arr.shape.size();
+    if (num_dimensions == 3) {
+        if (arr.shape[0] == 3 || arr.shape[0] < arr.shape[2]) {
+            used_channel_order = ChannelOrder::C_H_W;
+        } else {
+            used_channel_order = ChannelOrder::H_W_C;
+        }
+    } else if (num_dimensions == 4) {
+        if (arr.shape[1] == 3 || arr.shape[1] < arr.shape[3]) {
+            used_channel_order = ChannelOrder::C_H_W;
+        } else {
+            used_channel_order = ChannelOrder::H_W_C;
+        }
+    } else {
+        used_channel_order = ChannelOrder::H_W_C;
+    }
 }
 
 // Load numpy data into vector of correct type, so data is interpret correctly
@@ -275,6 +322,10 @@ void MainWindow::load_numpy_file(const string &path) {
         ui->channelSlider->setValue(0);
         this->updateTextInToolbar();
 
+        if (user_selected_order == ChannelOrder::Auto) {
+            auto_set_channel_order(arr);
+        }
+
         if (num_dimensions < 2) {
             QMessageBox msgBox;
             msgBox.setText("This numpy array does not have enough dimensions, expecting at least 2");
@@ -286,26 +337,26 @@ void MainWindow::load_numpy_file(const string &path) {
             width = static_cast<int>(arr.shape[1]);
             num_channels = 1;
             batch_size = 1;
-        } else if (channelOrder == ChannelOrder::C_H_W && num_dimensions == 3) {
-            qInfo("Expecting channels*height*width shape");
+        } else if (used_channel_order == ChannelOrder::C_H_W && num_dimensions == 3) {
+            qInfo("Rendering as channels*height*width");
             height = static_cast<int>(arr.shape[1]);
             width = static_cast<int>(arr.shape[2]);
             num_channels = static_cast<int>(arr.shape[0]);
             batch_size = 1;
-        } else if (channelOrder == ChannelOrder::C_H_W && num_dimensions >= 4) {
-            qInfo("Expecting n*channels*height*width shape");
+        } else if (used_channel_order == ChannelOrder::C_H_W && num_dimensions >= 4) {
+            qInfo("Rendering as n*channels*height*width");
             height = static_cast<int>(arr.shape[2]);
             width = static_cast<int>(arr.shape[3]);
             num_channels = static_cast<int>(arr.shape[1]);
             batch_size = static_cast<int>(arr.shape[0]);
-        } else if (channelOrder == ChannelOrder::H_W_C && num_dimensions == 3) {
-            qInfo("Expecting height*width*channels shape");
+        } else if (used_channel_order == ChannelOrder::H_W_C && num_dimensions == 3) {
+            qInfo("Rendering as height*width*channels");
             height = static_cast<int>(arr.shape[0]);
             width = static_cast<int>(arr.shape[1]);
             num_channels = static_cast<int>(arr.shape[2]);
             batch_size = 1;
-        } else if (channelOrder == ChannelOrder::H_W_C && num_dimensions >= 4) {
-            qInfo("Expecting n*height*width*channels shape");
+        } else if (used_channel_order == ChannelOrder::H_W_C && num_dimensions >= 4) {
+            qInfo("Rendering as n*height*width*channels");
             height = static_cast<int>(arr.shape[1]);
             width = static_cast<int>(arr.shape[2]);
             num_channels = static_cast<int>(arr.shape[3]);
@@ -353,23 +404,20 @@ void MainWindow::load_numpy_file(const string &path) {
                 return;
         }
 
-        shapeStr.append(" (");
-        for (unsigned long i = 0; i < arr.shape.size(); i++) {
-            shapeStr.append(to_string(arr.shape.at(i)));
-            if (i < arr.shape.size() - 1)
-                shapeStr.append(", ");
-        }
-        shapeStr.append(")");
+        shapeStr.append(" ");
+        shapeStr.append(arr.shape_str());
+
         dimensionLabel->setText(QString::fromUtf8(shapeStr.c_str()));
 
         // Calculate for contrast stretch
-        max_pixel_in_file = *max_element(loaded_data.begin(), loaded_data.end());
-        min_pixel_in_file = *min_element(loaded_data.begin(), loaded_data.end());
+        auto mm = std::minmax_element(loaded_data.begin(), loaded_data.end());
+        min_pixel_in_file = *mm.first;
+        max_pixel_in_file = *mm.second;
 
         // Put stats in GUI
         qInfo("Max pixel value in file: %f Min pixel value in file : %f", max_pixel_in_file, min_pixel_in_file);
         QString message;
-        message.sprintf("Bands : %i Width : %i Height : %i Wordsize : %i", num_channels, width, height, wordSize);
+        message.sprintf("Channels : %i Width : %i Height : %i Wordsize : %i", num_channels, width, height, wordSize);
         qInfo("%s", message.toStdString().c_str());
         ui->statusBar->showMessage(message);
 
@@ -505,7 +553,8 @@ void MainWindow::on_actionconvert_triggered() {
 
 void MainWindow::on_order_C_H_W_triggered() {
     qInfo("Set to mode C*H*W");
-    channelOrder = ChannelOrder::C_H_W;
+    user_selected_order = ChannelOrder::C_H_W;
+    used_channel_order = ChannelOrder::C_H_W;
     updateSettingsMenu();
     if (loaded_path.length() > 3) {
         load_numpy_file(loaded_path);
@@ -514,12 +563,25 @@ void MainWindow::on_order_C_H_W_triggered() {
 
 void MainWindow::on_order_H_W_C_triggered() {
     qInfo("Set to mode H*W*C");
-    channelOrder = ChannelOrder::H_W_C;
+    user_selected_order = ChannelOrder::H_W_C;
+    used_channel_order = ChannelOrder::H_W_C;
     updateSettingsMenu();
     if (loaded_path.length() > 3) {
         load_numpy_file(loaded_path);
     }
 }
+
+
+void MainWindow::on_order_automatic_triggered() {
+    qInfo("Set to mode auto");
+    user_selected_order = ChannelOrder::Auto;
+    used_channel_order = ChannelOrder::Auto;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        load_numpy_file(loaded_path);
+    }
+}
+
 
 void MainWindow::on_color_Grayscale_triggered() {
     colorMode = ColorMode::Grayscale;
@@ -554,3 +616,21 @@ void MainWindow::on_color_BGR_triggered() {
     }
 }
 
+
+void MainWindow::on_contrast_array_triggered() {
+    qInfo("Contrast mode triggered");
+    contrastMode = ContrastMode::Array;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        render_channel(ui->batchSlider->value(), ui->channelSlider->value());
+    }
+}
+
+void MainWindow::on_contrast_canvas_triggered() {
+    qInfo("Contrast mode triggered");
+    contrastMode = ContrastMode::Canvas;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        render_channel(ui->batchSlider->value(), ui->channelSlider->value());
+    }
+}

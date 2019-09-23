@@ -6,10 +6,14 @@ static int cmap_green[] = {0, 130, 174, 202, 219, 85, 141, 174, 208, 163, 196, 2
 static int cmap_blue[] = {0, 189, 214, 225, 239, 13, 60, 107, 162, 84, 118, 155, 192, 177, 200, 220, 235, 99, 150, 189, 217};
 
 enum class ChannelOrder {
-    H_W_C, C_H_W
+    H_W_C, C_H_W, Auto
 };
 enum class ColorMode {
     Grayscale, Colormap, RGB, BGR
+};
+
+enum class ContrastMode {
+    Array, Canvas
 };
 
 inline unsigned long index_in_vector(ChannelOrder channelOrder, int n, int x, int y, int channel, int width, int height, int num_channels) {
