@@ -1,8 +1,5 @@
-3|<ul>
+4|<ul>
   <li>Support for 4d numpy arrays</li>
   <li>CMakeLists for cmake</li>
-  <li>Snapcraft files</li>
-  <li>ICNS icon for Mac app</li>
-  <li>ICO icon for Windows</li>
 </ul>
 Download from https://bit.ly/2BrIVaP

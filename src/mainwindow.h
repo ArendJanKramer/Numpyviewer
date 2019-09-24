@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#define app_version 3
+#define app_version 4
 
 #include <QMainWindow>
 #include <QtDebug>
