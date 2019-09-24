@@ -1,8 +1,5 @@
-3|<ul>
-  <li>Support for 4d numpy arrays</li>
-  <li>CMakeLists for cmake</li>
-  <li>Snapcraft files</li>
-  <li>ICNS icon for Mac app</li>
-  <li>ICO icon for Windows</li>
+4|<ul>
+  <li>Automatic channel order detection</li>
+  <li>Contrast stretch can now also be done on canvas</li>
 </ul>
 Download from https://bit.ly/2BrIVaP
