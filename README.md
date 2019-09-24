@@ -1,11 +1,12 @@
 # Numpy Viewer for Hyperspectral ENVI, and Tensors
-Viewer for multi dimensional Numpy arrays
-
-[![Numpy viewer](https://snapcraft.io/numpyviewer/badge.svg)](https://snapcraft.io/numpyviewer)
+Viewer for multi dimensional Numpy arrays for Windows, macOS and Linux.
 
 This viewer opens practically all numpy files, that has at least two dimensions. Using a slider it is possible to scroll through the batches and channels.
-
 This tool might also be useful for people working with DICOM. If you convert a DICOM image to a numpy array, and then save it, then this tool is useful to scroll through slices.
+
+
+Get it now on Snapcraft, or find prebuilt binaries for Windows, mac or AppImage on the Releases page
+[![Numpy viewer](https://snapcraft.io/numpyviewer/badge.svg)](https://snapcraft.io/numpyviewer)
 
 ## Hyperspectral ENVI support
 It features an ENVI to numpy converter, that converts raw ENVI shots to numpy (even white/black-ref support).
