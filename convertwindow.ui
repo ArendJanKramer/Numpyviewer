@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>517</width>
-    <height>223</height>
+    <height>285</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,12 +17,11 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Conversion tool</string>
+   <string>ENVI Conversion tool</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icons.qrc">
-    <normaloff>:/artwork/convert.svg</normaloff>:/artwork/convert.svg
-   </iconset>
+    <normaloff>:/artwork/convert.svg</normaloff>:/artwork/convert.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">

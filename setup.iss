@@ -9,12 +9,12 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{8F6DBECF-4E0C-4244-8BFD-6BEA29D30915}
 AppName={#MyAppName}
-AppVersion=1.0
+AppVersion=1.4
 ;AppVerName=Numpy viewer 1.0
 AppPublisher=Arend Jan Kramer
-AppPublisherURL=https://github.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer
-AppSupportURL=https://github.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer
-AppUpdatesURL=https://github.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer
+AppPublisherURL=https://github.com/ArendJanKramer/Numpyviewer
+AppSupportURL=https://github.com/ArendJanKramer/Numpyviewer
+AppUpdatesURL=https://github.com/ArendJanKramer/Numpyviewer
 ChangesAssociations=yes
 DefaultDirName={pf}\Numpy viewer
 DisableProgramGroupPage=yes
@@ -30,9 +30,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\ArendJanKramer\Downloads\build-numpyviewer-Desktop_Qt_5_10_0_MSVC2017_64bit-Release\deploy\numpyviewer.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\ArendJanKramer\Downloads\build-numpyviewer-Desktop_Qt_5_10_0_MSVC2017_64bit-Release\deploy\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\Users\ArendJanKramer\Downloads\build-numpyviewer-Desktop_Qt_5_10_0_MSVC2017_64bit-Release\deploy\vcredist_x64.exe"; DestDir: {tmp}; Flags: deleteafterinstall
+Source: "C:\Users\Arend Jan Kramer\numpyviewer\deploy windows\numpyviewer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Arend Jan Kramer\numpyviewer\deploy windows\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Arend Jan Kramer\numpyviewer\deploy windows\vcredist_x64.exe"; DestDir: {tmp}; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
