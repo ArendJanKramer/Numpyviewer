@@ -1,5 +1,5 @@
 4|<ul>
-  <li>Support for 4d numpy arrays</li>
-  <li>CMakeLists for cmake</li>
+  <li>Automatic channel order detection</li>
+  <li>Contrast stretch can now also be done on canvas</li>
 </ul>
 Download from https://bit.ly/2BrIVaP
