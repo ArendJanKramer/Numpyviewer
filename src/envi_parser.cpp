@@ -1,4 +1,5 @@
 #include "envi_parser.h"
+#include <functional>
 
 inline bool fileExists(const std::string &name) {
     ifstream f(name.c_str());

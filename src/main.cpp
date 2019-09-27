@@ -47,5 +47,7 @@ public:
 
 
 int main(int argc, char *argv[]) {
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     NumpyViewer a(argc, argv);
 }
