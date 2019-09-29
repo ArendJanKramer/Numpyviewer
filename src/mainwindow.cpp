@@ -9,7 +9,6 @@
 using namespace QtCharts;
 using namespace std;
 
-// Initizializer
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
         ui(new Ui::MainWindow) {
@@ -376,7 +375,7 @@ void MainWindow::load_numpy_file(const string &path, bool by_user) {
 
                     auto name = pair.first;
                     auto array = pair.second;
-                    string title = name + "" + array.shape_str();
+                    string title = name + " " + array.shape_str();
                     comboBox->addItem(title.c_str(), QVariant(name.c_str()));
                 }
 
