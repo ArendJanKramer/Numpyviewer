@@ -69,7 +69,9 @@ ICON = artwork/icon.icns
 
 #CONFIG+= static
 #QMAKE_LFLAGS += -static
+LIBS += -lz
 
+INCLUDEPATH += "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
 RC_FILE = appicon.rc
 
 target.path = /usr/local/bin/

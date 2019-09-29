@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1.0)
 
-set(Qt5_DIR "/home/arendjan/Qt/5.12.5/gcc_64/lib/cmake/Qt5")
+#set(Qt5_DIR "/home/arendjan/Qt/5.12.5/gcc_64/lib/cmake/Qt5")
+set(Qt5_DIR "/Users/arendjan/Qt/5.12.5/clang_64/lib/cmake/Qt5")
 
 project(Numpyviewer)
 

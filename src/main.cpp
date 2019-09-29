@@ -22,7 +22,7 @@ public:
         for (int i = 0; i < argc - 1; i++) {
             auto *w = new MainWindow;
             w->show();
-            w->load_numpy_file(argv[i + 1]);
+            w->load_numpy_file(argv[i + 1], true);
         }
 
         exec();
@@ -36,7 +36,7 @@ public:
 
             auto *w = new MainWindow;
             w->show();
-            w->load_numpy_file(openEvent->file().toStdString());
+            w->load_numpy_file(openEvent->file().toStdString(), true);
         }
 
         return QApplication::event(event);
