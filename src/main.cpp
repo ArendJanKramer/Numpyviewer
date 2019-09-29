@@ -16,12 +16,12 @@ public:
         : QApplication(argc, argv) {
 
         if (argc <= 1) {
-            MainWindow *w = new MainWindow;
+            auto *w = new MainWindow;
             w->show();
         }
 
         for (int i = 0; i < argc - 1; i++) {
-            MainWindow *w = new MainWindow;
+            auto *w = new MainWindow;
             w->show();
             w->load_numpy_file(argv[i + 1]);
         }

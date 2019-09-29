@@ -309,6 +309,7 @@ char const *MainWindow::nameOfType(char type) {
 
 // This function tries to load the file, and sets all corresponding settings
 void MainWindow::load_numpy_file(const string &path) {
+    cnpy::npz_t arrays = cnpy::npz_load(path);
 
     qInfo("Load numpy");
     try {
@@ -489,7 +490,7 @@ void MainWindow::on_batchSlider_valueChanged(int value) {
 }
 
 void MainWindow::on_actionOpen_triggered() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "", tr("Numpy Files (*.npy)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "", tr("Numpy Files (*.npy *.npz)"));
     if (fileName != nullptr) {
         load_numpy_file(fileName.toStdString());
     }

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1.0)
 
-set(Qt5_DIR "/home/arendjan/Qt/5.12.5/gcc_64/lib/cmake/Qt5/")
+set(Qt5_DIR "/Users/arendjan/Qt/5.12.5/clang_64/lib/cmake/Qt5")
 
 project(Numpyviewer)
 
@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 11)
 # Find the QtWidgets library
 find_package(Qt5 REQUIRED COMPONENTS Widgets Core Charts Network Svg)
 find_package(Qt5Charts REQUIRED)
+find_package(ZLIB)
 
 list(APPEND RESOURCES icons.qrc)
 qt5_add_resources(RCC_SOURCES ${RESOURCES})
@@ -55,7 +56,7 @@ add_library(NumpyviewerLib SHARED
         ${NumpyviewerLib_ui_moc}
         ${RCC_SOURCES}
         )
-target_link_libraries(NumpyviewerLib Qt5::Core Qt5::Network Qt5::Widgets Qt5::Charts Qt5::Svg)
+target_link_libraries(NumpyviewerLib Qt5::Core Qt5::Network Qt5::Widgets Qt5::Charts Qt5::Svg ${ZLIB_LIBRARIES})
 
 set_property(TARGET NumpyviewerLib PROPERTY CXX_STANDARD 11)
 set_property(TARGET NumpyviewerLib PROPERTY CXX_STANDARD_REQUIRED ON)
