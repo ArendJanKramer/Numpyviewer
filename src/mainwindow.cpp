@@ -1,11 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
-#include <stdint.h>
+#include <cstdint>
 #include "keyeventhandler.h"
 #include <QtCharts>
 #include "graphics_view_zoom.h"
-
+#include <locale>
 using namespace QtCharts;
 using namespace std;
 
@@ -20,6 +20,17 @@ MainWindow::MainWindow(QWidget *parent) :
     loaded_path = "";
 
     ui->setupUi(this);
+
+    auto* spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->toolBar->addWidget(spacer);
+
+    this->comboBox = new QComboBox();
+    comboBox->setFixedWidth(200);
+    connect(comboBox, SIGNAL(currentTextChanged(QString)), this, SLOT(comboboxItemChanged(const QString &)));
+    comboBoxAction = ui->toolBar->addWidget(this->comboBox);
+    comboBoxAction->setVisible(false);
+
 
     auto *z = new Graphics_view_zoom(ui->imageCanvas);
     z->set_modifiers(Qt::NoModifier);
@@ -37,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dimensionLabel->setText("");
     ui->statusBar->addPermanentWidget(dimensionLabel, 0);
 
+
     auto *handler = new KeyEventHandler(ui->imageCanvas);
     ui->imageCanvas->installEventFilter(handler);
     connect(handler, &KeyEventHandler::mousePositionChanged, this, &MainWindow::mouseMovedEvent);
@@ -47,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QUrl imageUrl("https://raw.githubusercontent.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer/master/version.txt");
     update_checker = new FileDownloader(imageUrl, this);
-    connect(update_checker, SIGNAL (downloaded()), this, SLOT (version_downloaded()));
+    connect(update_checker, SIGNAL(downloaded()), this, SLOT(version_downloaded()));
 }
 
 void MainWindow::updateSettingsMenu() {
@@ -131,7 +143,7 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event) {
         unsigned long index = index_in_vector(used_channel_order, n, x, y, ui->channelSlider->value(), width, height,
                                               num_channels);
 
-        if (index <= loaded_data.size() && x <= width && y <= height && y >= 0 && x >= 0) {
+        if (index < loaded_data.size() && x <= width && y <= height && y >= 0 && x >= 0) {
             auto value = static_cast<float>(loaded_data.at(index));
 
             QString message;
@@ -243,17 +255,35 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
 
 }
 
+int biggestOutlier(const std::vector<size_t>& shape){
+    // Finds the axis that outlies the most from the others. This is generally speaking the channel axis
+    size_t average = accumulate( shape.begin(), shape.end(), 0.0)/shape.size();
+    size_t abs_diff = 0;
+    int axis = 0;
+    int i = 0;
+    for (size_t a : shape){
+        size_t diff = std::abs(int(a - average));
+        if (diff > abs_diff) {
+            abs_diff = diff;
+            axis = i;
+        }
+        i++;
+    }
+    return axis;
+}
+
 void MainWindow::auto_set_channel_order(cnpy::NpyArray &arr) {
     qInfo() << "Determining best channel order for shape " << QString::fromStdString(arr.shape_str());
     int num_dimensions = arr.shape.size();
+    int biggest_outlier = biggestOutlier(arr.shape);
     if (num_dimensions == 3) {
-        if (arr.shape[0] == 3 || arr.shape[0] < arr.shape[2]) {
+        if (biggest_outlier != 2) {
             used_channel_order = ChannelOrder::C_H_W;
         } else {
             used_channel_order = ChannelOrder::H_W_C;
         }
     } else if (num_dimensions == 4) {
-        if (arr.shape[1] == 3 || arr.shape[1] < arr.shape[3]) {
+        if (biggest_outlier != 3) {
             used_channel_order = ChannelOrder::C_H_W;
         } else {
             used_channel_order = ChannelOrder::H_W_C;
@@ -307,13 +337,70 @@ char const *MainWindow::nameOfType(char type) {
     }
 }
 
+bool isSuffix(string s1, string s2) {
+    int n1 = s1.length(), n2 = s2.length();
+    if (n1 > n2)
+        return false;
+    for (int i = 0; i < n1; i++)
+        if (s1[n1 - i - 1] != s2[n2 - i - 1])
+            return false;
+    return true;
+}
+
+
 // This function tries to load the file, and sets all corresponding settings
-void MainWindow::load_numpy_file(const string &path) {
-    cnpy::npz_t arrays = cnpy::npz_load(path);
+void MainWindow::load_numpy_file(const string &path, bool by_user) {
+    // Make lower case of path
+    string lower = path;
+    transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+    cnpy::NpyArray arr;
 
     qInfo("Load numpy");
     try {
-        cnpy::NpyArray arr = cnpy::npy_load(path);
+
+        // If npz file
+        if (isSuffix("npz", lower)) {
+
+            if (by_user) { // User loaded a file
+                qInfo("Reloading npz file from disk");
+                npz_pairs = cnpy::npz_load(path);
+                loaded_path = path;
+
+                // Hide, disable and clear combobox
+                comboBox->setEnabled(false);
+                comboBoxAction->setVisible(false);
+                comboBox->clear();
+
+                for (const auto &pair : npz_pairs) {
+                    comboBoxAction->setVisible(true);
+
+                    auto name = pair.first;
+                    auto array = pair.second;
+                    string title = name + "" + array.shape_str();
+                    comboBox->addItem(title.c_str(), QVariant(name.c_str()));
+                }
+
+                comboBox->setEnabled(true);
+                // The combobox will automatically call comboboxItemChanged()
+                // This function will be called with the corresponding array
+                return;
+            }
+            else {
+                // If the combobox is disabled, we are constructing it
+                if (!comboBox->isEnabled())
+                    return;
+
+                QString value = comboBox->currentData().toString();
+                auto p = npz_pairs.at(value.toUtf8().constData());
+                arr = p;
+            }
+
+        } else {
+            npz_pairs.clear();
+            comboBoxAction->setVisible(false);
+            arr = cnpy::npy_load(path);
+        }
+
         int wordSize = static_cast<int>(arr.word_size);
         char data_type = static_cast<char>(arr.data_type);
         int num_dimensions = arr.shape.size();
@@ -326,11 +413,22 @@ void MainWindow::load_numpy_file(const string &path) {
             auto_set_channel_order(arr);
         }
 
-        if (num_dimensions < 2) {
+        if (num_dimensions < 1) {
             QMessageBox msgBox;
-            msgBox.setText("This numpy array does not have enough dimensions, expecting at least 2");
+            msgBox.setText("This numpy array does not have any dimensions, expecting at least 1");
             msgBox.exec();
             return;
+        }
+        else if (num_dimensions < 2) {
+            height = 1;
+            width = 1;
+            num_channels = static_cast<int>(arr.shape[0]);
+            batch_size = 1;
+
+//            QMessageBox msgBox;
+//            msgBox.setText("This numpy array does not have enough dimensions, expecting at least 2");
+//            msgBox.exec();
+//            return;
         } else if (num_dimensions == 2) {
             qInfo("Array is 2d, assuming 1 channel");
             height = static_cast<int>(arr.shape[0]);
@@ -452,7 +550,7 @@ void MainWindow::load_numpy_file(const string &path) {
         QMessageBox msgBox;
         msgBox.setText(e.what());
         msgBox.exec();
-        close();
+//        close();
     }
 
 }
@@ -472,7 +570,8 @@ void MainWindow::updateTextInToolbar() {
     if (batch_size > 1 && num_channels <= 1) {
         ui->actionSelected_band->setText(QString("Batch: %1").arg(ui->batchSlider->value()));
     } else if (batch_size > 1 && num_channels > 1) {
-        ui->actionSelected_band->setText(QString("Batch: %1, Channel: %2").arg(ui->batchSlider->value()).arg(ui->channelSlider->value()));
+        ui->actionSelected_band->setText(
+                QString("Batch: %1, Channel: %2").arg(ui->batchSlider->value()).arg(ui->channelSlider->value()));
     } else {
         ui->actionSelected_band->setText(QString("Channel: %1").arg(ui->channelSlider->value()));
     }
@@ -492,7 +591,7 @@ void MainWindow::on_batchSlider_valueChanged(int value) {
 void MainWindow::on_actionOpen_triggered() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "", tr("Numpy Files (*.npy *.npz)"));
     if (fileName != nullptr) {
-        load_numpy_file(fileName.toStdString());
+        load_numpy_file(fileName.toStdString(), true);
     }
 }
 
@@ -540,6 +639,10 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     histoGram.close();
     if (event != nullptr)
         event->accept();
+}
+
+void MainWindow::comboboxItemChanged(const QString &text){
+    load_numpy_file(loaded_path);
 }
 
 void MainWindow::on_actionHistogram_triggered(bool checked) {

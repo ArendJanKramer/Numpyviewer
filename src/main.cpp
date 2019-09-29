@@ -12,8 +12,7 @@
 
 class NumpyViewer : public QApplication {
 public:
-    NumpyViewer(int &argc, char **argv)
-        : QApplication(argc, argv) {
+    NumpyViewer(int &argc, char **argv) : QApplication(argc, argv) {
 
         if (argc <= 1) {
             auto *w = new MainWindow;
@@ -29,16 +28,15 @@ public:
         exec();
     }
 
-    bool event(QEvent *event) {
+    bool event(QEvent *event) override {
         if (event->type() == QEvent::FileOpen) {
-            QFileOpenEvent *openEvent = static_cast<QFileOpenEvent *>(event);
+            auto *openEvent = dynamic_cast<QFileOpenEvent *>(event);
 
             qDebug() << "Open file" << openEvent->file();
 
-            MainWindow *w = new MainWindow;
+            auto *w = new MainWindow;
             w->show();
-            w->load_numpy_file(openEvent->file().toStdString().c_str());
-
+            w->load_numpy_file(openEvent->file().toStdString());
         }
 
         return QApplication::event(event);

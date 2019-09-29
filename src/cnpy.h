@@ -5,9 +5,11 @@
 #ifndef LIBCNPY_H_
 #define LIBCNPY_H_
 
+#include <memory>
 #include<string>
 #include<stdexcept>
 #include<sstream>
+#include <utility>
 #include<vector>
 #include<cstdio>
 #include<typeinfo>
@@ -16,18 +18,18 @@
 #include<zlib.h>
 #include<map>
 #include<memory>
-#include<stdint.h>
+#include<cstdint>
 #include<numeric>
 
 namespace cnpy {
 
     struct NpyArray {
-        NpyArray(const std::vector<size_t> &_shape, size_t _word_size, char _data_type, bool _fortran_order) :
-                shape(_shape), word_size(_word_size), data_type(_data_type), fortran_order(_fortran_order) {
+        NpyArray(std::vector<size_t> _shape, size_t _word_size, char _data_type, bool _fortran_order) :
+                shape(std::move(_shape)), word_size(_word_size), data_type(_data_type), fortran_order(_fortran_order) {
             num_vals = 1;
-            for (size_t i = 0; i < shape.size(); i++) num_vals *= shape[i];
-            data_holder = std::shared_ptr<std::vector<char>>(
-                    new std::vector<char>(num_vals * word_size));
+            for (unsigned long i : shape) num_vals *= i;
+            data_holder = std::make_shared<std::vector<char>>(
+                    num_vals * word_size);
         }
 
         NpyArray() : shape(0), word_size(0), data_type(0), fortran_order(0), num_vals(0) {}
@@ -80,9 +82,11 @@ namespace cnpy {
     template<typename T>
     std::vector<char> create_npy_header(const std::vector<size_t> &shape);
 
-    void parse_npy_header(FILE *fp, size_t &word_size, char &data_type, std::vector<size_t> &shape, bool &fortran_order);
+    void
+    parse_npy_header(FILE *fp, size_t &word_size, char &data_type, std::vector<size_t> &shape, bool &fortran_order);
 
-    void parse_npy_header(unsigned char *buffer, size_t &word_size, char &data_type, std::vector<size_t> &shape, bool &fortran_order);
+    void parse_npy_header(unsigned char *buffer, size_t &word_size, char &data_type, std::vector<size_t> &shape,
+                          bool &fortran_order);
 
     void parse_zip_footer(FILE *fp, uint16_t &nrecs, size_t &global_header_size, size_t &global_header_offset);
 

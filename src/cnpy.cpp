@@ -7,8 +7,7 @@
 #include<cstdlib>
 #include<algorithm>
 #include<cstring>
-#include<iomanip>
-#include<stdint.h>
+#include<cstdint>
 #include<stdexcept>
 #include <regex>
 
@@ -60,7 +59,8 @@ std::vector<char> &cnpy::operator+=(std::vector<char> &lhs, const char *rhs) {
     return lhs;
 }
 
-void cnpy::parse_npy_header(unsigned char *buffer, size_t &word_size, char &data_type, std::vector<size_t> &shape, bool &fortran_order) {
+void cnpy::parse_npy_header(unsigned char *buffer, size_t &word_size, char &data_type, std::vector<size_t> &shape,
+                            bool &fortran_order) {
     //std::string magic_string(buffer,6);
     uint8_t major_version = *reinterpret_cast<uint8_t *>(buffer + 6);
     uint8_t minor_version = *reinterpret_cast<uint8_t *>(buffer + 7);
@@ -103,7 +103,8 @@ void cnpy::parse_npy_header(unsigned char *buffer, size_t &word_size, char &data
     word_size = atoi(str_ws.substr(0, loc2).c_str());
 }
 
-void cnpy::parse_npy_header(FILE *fp, size_t &word_size, char &data_type, std::vector<size_t> &shape, bool &fortran_order) {
+void
+cnpy::parse_npy_header(FILE *fp, size_t &word_size, char &data_type, std::vector<size_t> &shape, bool &fortran_order) {
     char buffer[256];
     size_t res = fread(buffer, sizeof(char), 11, fp);
     if (res != 11)
