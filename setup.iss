@@ -9,7 +9,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{8F6DBECF-4E0C-4244-8BFD-6BEA29D30915}
 AppName={#MyAppName}
-AppVersion=1.4
+AppVersion=1.5
 ;AppVerName=Numpy viewer 1.0
 AppPublisher=Arend Jan Kramer
 AppPublisherURL=https://github.com/ArendJanKramer/Numpyviewer
@@ -37,6 +37,7 @@ Source: "C:\Users\Arend Jan Kramer\numpyviewer\deploy windows\vcredist_x64.exe";
 
 [Registry]
 Root: HKCR; Subkey: ".npy"; ValueType: string; ValueName: ""; ValueData: "{#MyAppName}"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: ".npz"; ValueType: string; ValueName: ""; ValueData: "{#MyAppName}"; Flags: uninsdeletevalue
 Root: HKCR; Subkey: "{#MyAppName}"; ValueType: string; ValueName: ""; ValueData: "Program {#MyAppName}"; Flags: uninsdeletekey
 Root: HKCR; Subkey: "{#MyAppName}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
 Root: HKCR; Subkey: "{#MyAppName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
