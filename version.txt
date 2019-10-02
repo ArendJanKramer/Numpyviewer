@@ -1,5 +1,5 @@
-4|<ul>
-  <li>Automatic channel order detection</li>
-  <li>Contrast stretch can now also be done on canvas</li>
+5|<ul>
+  <li>NPZ support</li>
+  <li>HiDPI support improved</li>
 </ul>
 Download from https://bit.ly/2BrIVaP

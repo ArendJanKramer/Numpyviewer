@@ -24,6 +24,12 @@ If desired, it can also merge different slices into one RGB view, or it can assi
 ![tensor](https://raw.githubusercontent.com/ArendJanKramer/Numpyviewer/master/artwork/Screenshot%20tensor.png)
 ![instances](https://raw.githubusercontent.com/ArendJanKramer/Numpyviewer/master/artwork/Screenshot%20instances.png)
 
+## NPZ Support
+The numpy viewer supports all npz files. It allows to select the instances within the npz file. 
+Then, the appropriate array will be loaded and all features can then be used. 
+
+![npz](https://raw.githubusercontent.com/ArendJanKramer/Numpyviewer/master/artwork/Screenshot%20npz.png)
+
 
 ## Contributes
 Three functions were kindly borrowed from K. Dijkstra's DDSL.

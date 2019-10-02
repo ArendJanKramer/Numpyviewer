@@ -69,7 +69,10 @@ ICON = artwork/icon.icns
 
 # macOS / Linux
 #INCLUDEPATH += "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
-#LIBS += -lz
+
+# AppImage / Linux support
+LIBS += -lz
+CONFIG += c++11
 
 # Windows
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
