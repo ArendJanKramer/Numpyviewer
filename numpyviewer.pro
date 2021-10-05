@@ -71,7 +71,9 @@ ICON = artwork/icon.icns
 #INCLUDEPATH += "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/"
 
 # AppImage / Linux support
-LIBS += -lz
+!win32 {
+    LIBS += -lz
+}
 CONFIG += c++11
 
 # Windows
