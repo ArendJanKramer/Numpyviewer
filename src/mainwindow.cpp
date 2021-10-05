@@ -139,14 +139,34 @@ void MainWindow::mouseMovedEvent(QMouseEvent *event) {
         int y = static_cast<int>(img_coord_pt.y());
         int n = ui->batchSlider->value();
 
-        unsigned long index = index_in_vector(used_channel_order, n, x, y, ui->channelSlider->value(), width, height,
-                                              num_channels);
+        int channelSelected = ui->channelSlider->value();
+        bool isMultiChannel = (colorMode == ColorMode::RGB) || (colorMode == ColorMode::BGR);
 
-        if (index < loaded_data.size() && x <= width && y <= height && y >= 0 && x >= 0) {
-            auto value = static_cast<float>(loaded_data.at(index));
+        unsigned long index = index_in_vector(used_channel_order, n, x, y, channelSelected, width, height, num_channels);
 
+        if (index < loaded_data.size() && x >= 0 && x <= width && y >= 0 && y <= height) {
             QString message;
-            message.sprintf("(%d, %d) [%g]", x, y, value);
+
+            if (isMultiChannel) {
+                // RGB/BGR display mode is on, so we will extract values for first 3 channels:
+                unsigned long indices[] = {
+                                    index_in_vector(used_channel_order, n, x, y, 0, width, height, num_channels),
+                                    index_in_vector(used_channel_order, n, x, y, 1, width, height, num_channels),
+                                    index_in_vector(used_channel_order, n, x, y, 2, width, height, num_channels)
+                              };
+
+                auto value_0 = static_cast<float>(loaded_data.at(indices[0]));
+                auto value_1 = static_cast<float>(loaded_data.at(indices[1]));
+                auto value_2 = static_cast<float>(loaded_data.at(indices[2]));
+
+                message.sprintf("(%d, %d) [%g, %g, %g]", x, y, value_0, value_1, value_2);
+
+            } else {
+                // Extracting only the specified channel value, because only a single-channel is being displayed
+                auto value = static_cast<float>(loaded_data.at(index));
+                message.sprintf("(%d, %d) [%g] /ch: %d/", x, y, value, channelSelected);
+            }
+
             ui->statusBar->showMessage(message);
 
             if (event->buttons() == Qt::LeftButton || event->buttons() == Qt::RightButton)
