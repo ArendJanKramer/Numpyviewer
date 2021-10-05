@@ -10,6 +10,7 @@ Graphics_view_zoom::Graphics_view_zoom(QGraphicsView *view)
     _view->setMouseTracking(true);
     _modifiers = Qt::ControlModifier;
     _zoom_factor_base = 1.0015;
+    _horizontal_scroll_accumulator = 0;
 }
 
 void Graphics_view_zoom::gentle_zoom(double factor) {
@@ -41,14 +42,50 @@ bool Graphics_view_zoom::eventFilter(QObject *object, QEvent *event) {
         }
     } else if (event->type() == QEvent::Wheel) {
         QWheelEvent *wheel_event = static_cast<QWheelEvent *>(event);
+        auto keyboard_modifiers = QApplication::keyboardModifiers();
+
+        double vertical_angle = wheel_event->angleDelta().y();
+        double horizontal_angle = wheel_event->angleDelta().x();
+
         if (QApplication::keyboardModifiers() == _modifiers) {
-            if (wheel_event->orientation() == Qt::Vertical) {
-                double angle = wheel_event->angleDelta().y();
-                double factor = qPow(_zoom_factor_base, angle);
+            if (abs(vertical_angle) > 0) {
+                double factor = qPow(_zoom_factor_base, vertical_angle);
                 gentle_zoom(factor);
                 return true;
             }
         }
+
+        // -- added Horizontal scroll over the Canvas to scroll through examples in the batch (or stack).
+        if (abs(horizontal_angle) > 0) {
+
+            if (QApplication::keyboardModifiers() & Qt::ShiftModifier) {
+                horizontal_angle *= 3;
+            }
+
+            auto parentWidget = this->_view->parent();
+            auto batchSlider = parentWidget->findChild<QSlider*>("batchSlider");
+            int oldBatchValue = batchSlider->value();
+
+            int degrees_per_item = 15;
+            int scroll_pseudovalue_per_item = 8 * degrees_per_item;
+
+            // -- the input from scroll wheel will go into the accumulator...
+            _horizontal_scroll_accumulator += horizontal_angle;
+            // ... then, the value in accumulator will influence the diffValue (= the number of batch samples to increment)
+            int diffValue = (_horizontal_scroll_accumulator / scroll_pseudovalue_per_item);
+            // ... and finally, we will exlude already-used value from accumulator.
+            _horizontal_scroll_accumulator -= diffValue * scroll_pseudovalue_per_item;
+
+            int newValue = oldBatchValue + diffValue;
+            batchSlider->setValue(newValue);
+
+            qDebug() << "BatchSlider: " << batchSlider << "; " << "Horizontal Angle: " << horizontal_angle
+                     << "; oldValue: " << oldBatchValue << "; newValue: " << newValue << "; remaining accumulator value: " << _horizontal_scroll_accumulator
+                     << "; Keyboard Modifier: " << keyboard_modifiers;
+
+            return true;
+        }
+
     }
     Q_UNUSED(object)
     return false;
