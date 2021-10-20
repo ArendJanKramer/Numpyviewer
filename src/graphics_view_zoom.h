@@ -2,6 +2,8 @@
 #define GRAPHICS_VIEW_ZOOM_H
 #include <QObject>
 #include <QGraphicsView>
+#include <QtDebug>
+#include <QtWidgets/QSlider>
 
 /*!
  * This class adds ability to zoom QGraphicsView using mouse wheel. The point under cursor
@@ -47,6 +49,7 @@ private:
     double _zoom_factor_base;
     QPointF target_scene_pos, target_viewport_pos;
     bool eventFilter(QObject* object, QEvent* event);
+    int _horizontal_scroll_accumulator;
 
 signals:
     void zoomed();
