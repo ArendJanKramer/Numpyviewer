@@ -31,6 +31,17 @@ Then, the appropriate array will be loaded and all features can then be used.
 ![npz](https://raw.githubusercontent.com/ArendJanKramer/Numpyviewer/master/artwork/Screenshot%20npz.png)
 
 
+
+## Scrolling through the slices -- "horizontal scroll"
+The numpy viewer supports fast and easy scrolling through slices using a Horizontal Scroll. This may be very useful to review 3D images, or to quickly scan through various examples in your batch or dataset. 
+
+For scrolling through the slices, you can either use your hardware `horizontal scroll` mouse wheel, or a combination of `Alt`+`scroll wheel` *(the standard one)*. 
+
+The default scrolling speed is 1 slice *"per step"*, in order to be able to reach any slice you want. However, this may be too slow and tedious if you want to find some particular slide far away from the begining -- and that's why there is also a "Fast mode". Just hold down the `Shift` key while you are scrolling and you will scroll 3x faster. 
+
+
+
+
 ## Contributes
 Three functions were kindly borrowed from K. Dijkstra's DDSL.
 
