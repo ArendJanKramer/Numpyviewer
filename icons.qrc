@@ -5,5 +5,9 @@
         <file>artwork/document-save.svg</file>
         <file>artwork/histogram.svg</file>
         <file>artwork/icon.svg</file>
+        <file>artwork/icon-rgb.svg</file>
+        <file>artwork/icon-bgr.svg</file>
+        <file>artwork/icon-colormap.svg</file>
+        <file>artwork/icon-greyscale.svg</file>
     </qresource>
 </RCC>

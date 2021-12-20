@@ -19,43 +19,43 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2">
-       <item row="1" column="0">
-           <widget class="QLabel" name="batchLabel">
-               <property name="text">
-                   <string>Batch index (n)</string>
-               </property>
-           </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-           <widget class="QGraphicsView" name="imageCanvas">
-               <property name="enabled">
-                   <bool>false</bool>
-               </property>
-               <property name="mouseTracking">
-                   <bool>true</bool>
-               </property>
-               <property name="interactive">
-                   <bool>false</bool>
-               </property>
-               <property name="dragMode">
-                   <enum>QGraphicsView::NoDrag</enum>
-               </property>
-           </widget>
-       </item>
-       <item row="2" column="0">
-           <widget class="QSlider" name="batchSlider">
-               <property name="enabled">
-                   <bool>false</bool>
-               </property>
-               <property name="maximum">
-                   <number>1</number>
-               </property>
-               <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-               </property>
-           </widget>
-       </item>
-       <item row="4" column="0" colspan="2">
+    <item row="1" column="0">
+     <widget class="QLabel" name="batchLabel">
+      <property name="text">
+       <string>Batch index (n)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="2">
+     <widget class="QGraphicsView" name="imageCanvas">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="mouseTracking">
+       <bool>true</bool>
+      </property>
+      <property name="interactive">
+       <bool>false</bool>
+      </property>
+      <property name="dragMode">
+       <enum>QGraphicsView::NoDrag</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QSlider" name="batchSlider">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="maximum">
+       <number>1</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="2">
      <widget class="QSlider" name="channelSlider">
       <property name="enabled">
        <bool>false</bool>
@@ -80,10 +80,10 @@
       </property>
      </widget>
     </item>
-       <item row="3" column="0">
-           <widget class="QLabel" name="channelLabel">
-               <property name="text">
-                   <string>Channel (c)</string>
+    <item row="3" column="0">
+     <widget class="QLabel" name="channelLabel">
+      <property name="text">
+       <string>Channel (c)</string>
       </property>
      </widget>
     </item>
@@ -95,7 +95,7 @@
      <x>0</x>
      <y>0</y>
      <width>599</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -116,7 +116,7 @@
      </property>
      <addaction name="order_H_W_C"/>
      <addaction name="order_C_H_W"/>
-        <addaction name="order_automatic"/>
+     <addaction name="order_automatic"/>
     </widget>
     <widget class="QMenu" name="menuColor">
      <property name="title">
@@ -127,16 +127,16 @@
      <addaction name="color_RGB"/>
      <addaction name="color_BGR"/>
     </widget>
-       <widget class="QMenu" name="menuContrast_stretch">
-           <property name="title">
-               <string>Contrast stretch</string>
-           </property>
-           <addaction name="contrast_array"/>
-           <addaction name="contrast_canvas"/>
-       </widget>
+    <widget class="QMenu" name="menuContrast_stretch">
+     <property name="title">
+      <string>Contrast stretch</string>
+     </property>
+     <addaction name="contrast_array"/>
+     <addaction name="contrast_canvas"/>
+    </widget>
     <addaction name="menuMode"/>
     <addaction name="menuColor"/>
-       <addaction name="menuContrast_stretch"/>
+    <addaction name="menuContrast_stretch"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSettings"/>
@@ -173,6 +173,12 @@
    <addaction name="actionExport_as_PNG"/>
    <addaction name="actionHistogram"/>
    <addaction name="actionconvert"/>
+   <addaction name="separator"/>
+   <addaction name="color_Grayscale"/>
+   <addaction name="color_Colormap"/>
+   <addaction name="color_RGB"/>
+   <addaction name="color_BGR"/>
+   <addaction name="separator"/>
    <addaction name="actionSelected_band"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
@@ -250,10 +256,10 @@
     <bool>true</bool>
    </property>
    <property name="text">
-       <string>(N*C*H*W)</string>
+    <string>(N*C*H*W)</string>
    </property>
-      <property name="shortcut">
-          <string>Ctrl+Z</string>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
    </property>
   </action>
   <action name="order_H_W_C">
@@ -261,15 +267,19 @@
     <bool>true</bool>
    </property>
    <property name="text">
-       <string>(N*H*W*C)</string>
+    <string>(N*H*W*C)</string>
    </property>
-      <property name="shortcut">
-          <string>Ctrl+X</string>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
    </property>
   </action>
   <action name="color_Colormap">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/artwork/icon-colormap.svg</normaloff>:/artwork/icon-colormap.svg</iconset>
    </property>
    <property name="text">
     <string>Colormap</string>
@@ -282,6 +292,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/artwork/icon-rgb.svg</normaloff>:/artwork/icon-rgb.svg</iconset>
+   </property>
    <property name="text">
     <string>RGB</string>
    </property>
@@ -292,6 +306,10 @@
   <action name="color_BGR">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/artwork/icon-bgr.svg</normaloff>:/artwork/icon-bgr.svg</iconset>
    </property>
    <property name="text">
     <string>BGR</string>
@@ -304,6 +322,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/artwork/icon-greyscale.svg</normaloff>:/artwork/icon-greyscale.svg</iconset>
+   </property>
    <property name="text">
     <string>Grayscale</string>
    </property>
@@ -311,39 +333,39 @@
     <string>Ctrl+1</string>
    </property>
   </action>
-     <action name="order_automatic">
-         <property name="checkable">
-             <bool>true</bool>
-         </property>
-         <property name="text">
-             <string>Automatic</string>
-         </property>
-         <property name="shortcut">
-             <string>Ctrl+A</string>
-         </property>
-     </action>
-     <action name="contrast_array">
-         <property name="checkable">
-             <bool>true</bool>
-         </property>
-         <property name="text">
-             <string>Complete array</string>
-         </property>
-         <property name="shortcut">
-             <string>Ctrl+,</string>
-         </property>
-     </action>
-     <action name="contrast_canvas">
-         <property name="checkable">
-             <bool>true</bool>
-         </property>
-         <property name="text">
-             <string>Over current canvas</string>
-         </property>
-         <property name="shortcut">
-             <string>Ctrl+.</string>
-         </property>
-     </action>
+  <action name="order_automatic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Automatic</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="contrast_array">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Complete array</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
+   </property>
+  </action>
+  <action name="contrast_canvas">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Over current canvas</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+.</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
