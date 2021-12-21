@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Exec=numpyviewer %u
+Name=numpyviewer
+GenericName=Numpy viewer
+Icon=${SNAP}/meta/gui/numpyviewer.png
+Terminal=false
+Categories=Development;IDE;Qt;
+MimeType=application/numpy;text/plain;application/octet-stream;
+MimeType=x-scheme-handler/npy;
+Name[en_US]=Numpy viewer

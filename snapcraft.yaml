@@ -2,10 +2,10 @@
 # See "Launcher and desktop integration" in https://tutorials.ubuntu.com/tutorial/snap-a-website#6
 
 name: numpyviewer
-version: '0.5'
+version: '0.6'
 summary: Convenient viewer for numpy files.
 description: |
-  See https://github.com/ArendJanKramer/Qt-ENVI-Numpy-Viewer.
+  See https://github.com/ArendJanKramer/Numpyviewer
 
 grade: stable
 confinement: strict
