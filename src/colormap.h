@@ -9,7 +9,7 @@ enum class ChannelOrder {
     H_W_C, C_H_W, Auto
 };
 enum class ColorMode {
-    Grayscale, Colormap, RGB, BGR
+    Grayscale, Colormap, RGB, BGR, Seismic
 };
 
 enum class ContrastMode {

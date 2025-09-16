@@ -73,6 +73,7 @@ void MainWindow::updateSettingsMenu() {
     ui->color_Colormap->setChecked(colorMode == ColorMode::Colormap);
     ui->color_RGB->setChecked(colorMode == ColorMode::RGB);
     ui->color_BGR->setChecked(colorMode == ColorMode::BGR);
+    ui->color_Seismic->setChecked(colorMode == ColorMode::Seismic);
 
     ui->contrast_array->setChecked(contrastMode == ContrastMode::Array);
     ui->contrast_canvas->setChecked(contrastMode == ContrastMode::Canvas);
@@ -241,6 +242,11 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
                 while (val1 > 20)
                     val1 = val1 - 20;
                 res = QColor(cmap_red[val1], cmap_green[val1], cmap_blue[val1]);
+            } else if (colorMode == ColorMode::Seismic){
+                if (contrastMode == ContrastMode::Canvas) {
+                    val1 = static_cast<uint8_t>((bitmap_ch1.at(x + (y * width)) - min_pixel) * slope);
+                }
+                res = QColor(val1, val1, val1);
             } else {
                 if (colorMode == ColorMode::RGB && num_channels >= 3) {
                     int val2 = static_cast<uint8_t>(bitmap_ch2.at(x + (y * width)));
@@ -738,6 +744,14 @@ void MainWindow::on_color_BGR_triggered() {
     }
 }
 
+void MainWindow::on_color_Seismic_triggered() {
+    qInfo("Seismic Colormap triggered");
+    colorMode = ColorMode::Seismic;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        load_numpy_file(loaded_path);
+    }
+}
 
 void MainWindow::on_contrast_array_triggered() {
     qInfo("Contrast mode triggered");

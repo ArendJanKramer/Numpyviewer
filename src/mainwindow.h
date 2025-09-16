@@ -78,6 +78,8 @@ private slots:
 
     void on_color_Grayscale_triggered();
 
+    void on_color_Seismic_triggered();
+
     void loadSibling(int offset);
 
     void loadNext();
