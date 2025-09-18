@@ -95,7 +95,7 @@
      <x>0</x>
      <y>0</y>
      <width>599</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -126,6 +126,8 @@
      <addaction name="color_Colormap"/>
      <addaction name="color_RGB"/>
      <addaction name="color_BGR"/>
+     <addaction name="color_Seismic"/>
+     <addaction name="color_Viridis"/>
     </widget>
     <widget class="QMenu" name="menuContrast_stretch">
      <property name="title">
@@ -178,6 +180,8 @@
    <addaction name="color_Colormap"/>
    <addaction name="color_RGB"/>
    <addaction name="color_BGR"/>
+   <addaction name="color_Seismic"/>
+   <addaction name="color_Viridis"/>
    <addaction name="separator"/>
    <addaction name="actionSelected_band"/>
   </widget>
@@ -364,6 +368,45 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+.</string>
+   </property>
+  </action>
+  <action name="color_Seismic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/artwork/seismic.png</normaloff>:/artwork/seismic.png</iconset>
+   </property>
+   <property name="text">
+    <string>Seismic</string>
+   </property>
+   <property name="toolTip">
+    <string>Seismic Colormap</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
+   </property>
+  </action>
+  <action name="color_Viridis">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/artwork/viridis.png</normaloff>:/artwork/viridis.png</iconset>
+   </property>
+   <property name="text">
+    <string>Viridis</string>
+   </property>
+   <property name="toolTip">
+    <string>Viridis Colormap</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+6</string>
    </property>
   </action>
  </widget>

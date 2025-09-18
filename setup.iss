@@ -9,7 +9,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{8F6DBECF-4E0C-4244-8BFD-6BEA29D30915}
 AppName={#MyAppName}
-AppVersion=1.6
+AppVersion=1.7
 ;AppVerName=Numpy viewer 1.0
 AppPublisher=Arend Jan Kramer
 AppPublisherURL=https://github.com/ArendJanKramer/Numpyviewer

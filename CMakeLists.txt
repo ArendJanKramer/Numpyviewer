@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5.0)
 
-set(Qt5_DIR "/home/arendjan/Qt/5.12.5/gcc_64/lib/cmake/Qt5")
+# set(Qt5_DIR "/home/arendjan/Qt/5.12.5/gcc_64/lib/cmake/Qt5")
 #set(Qt5_DIR "/Users/arendjan/Qt/5.12.5/clang_64/lib/cmake/Qt5")
+set(Qt5_DIR "D:/Qt/5.12.5/mingw73_64/lib/cmake/Qt5")
 
 project(Numpyviewer)
 
@@ -31,6 +32,7 @@ list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/histogram.cpp)
 list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/ini.c)
 list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/INIReader.cpp)
 list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/keyeventhandler.cpp)
+list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/colormap.cpp)
 list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/mainwindow.cpp)
 
 list(APPEND NumpyviewerLib_hdr ${PROJECT_SOURCE_DIR}/src/convertwindow.h)
@@ -63,4 +65,19 @@ set_property(TARGET NumpyviewerLib PROPERTY CXX_STANDARD 11)
 set_property(TARGET NumpyviewerLib PROPERTY CXX_STANDARD_REQUIRED ON)
 
 add_executable(Numpyviewer ${NumpyviewerBin_src})
+
+if(WIN32)
+        set_property(TARGET Numpyviewer PROPERTY WIN32_EXECUTABLE ON)
+        message(STATUS "Set Numpyviewer as a WIN32 GUI executable (no console window).")
+
+        set(ICON_RC_FILE "${PROJECT_SOURCE_DIR}/appicon.rc") 
+
+        if(EXISTS "${ICON_RC_FILE}")
+                target_sources(Numpyviewer PRIVATE "${ICON_RC_FILE}")
+                message(STATUS "Added Windows executable icon resource: ${ICON_RC_FILE}")
+        else()
+                message(WARNING "Windows executable icon resource (appicon.rc) not found at ${ICON_RC_FILE}. The executable might not have an icon.")
+        endif()
+endif()
+
 target_link_libraries(Numpyviewer NumpyviewerLib)

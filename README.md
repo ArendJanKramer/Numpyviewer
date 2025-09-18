@@ -1,4 +1,13 @@
 # Numpy Viewer for Hyperspectral ENVI, and Tensors
+
+## Update
+
+The original author has stopped updates. I have forked the project and added support for two new color maps: `seismic` and `viridis`. The version number has been updated to **1.7**.
+
+Due to my limited technical skills, I have only compiled and released the Windows version. However, the updated code contains no platform-specific code, so users on other operating systems should be able to compile it themselves and run it successfully.
+
+## Original introduction
+
 Viewer for multi dimensional Numpy arrays for Windows, macOS and Linux.
 
 This viewer opens practically all numpy files, that has at least two dimensions. Using a slider it is possible to scroll through the batches and channels.

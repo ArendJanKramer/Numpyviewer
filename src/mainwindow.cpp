@@ -6,6 +6,7 @@
 #include <QtCharts>
 #include "graphics_view_zoom.h"
 #include <locale>
+#include "colormap.h"
 using namespace QtCharts;
 using namespace std;
 
@@ -73,6 +74,8 @@ void MainWindow::updateSettingsMenu() {
     ui->color_Colormap->setChecked(colorMode == ColorMode::Colormap);
     ui->color_RGB->setChecked(colorMode == ColorMode::RGB);
     ui->color_BGR->setChecked(colorMode == ColorMode::BGR);
+    ui->color_Seismic->setChecked(colorMode == ColorMode::Seismic);
+    ui->color_Viridis->setChecked(colorMode == ColorMode::Viridis);
 
     ui->contrast_array->setChecked(contrastMode == ContrastMode::Array);
     ui->contrast_canvas->setChecked(contrastMode == ContrastMode::Canvas);
@@ -186,8 +189,10 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
 
     float max_pixel = max_pixel_in_file;
     float min_pixel = min_pixel_in_file;
+    float min_value = min_pixel;
 
     float slope = (255.0f) / (max_pixel - min_pixel);
+    float origin_slope = slope;
 
     // Build bitmap array
     unsigned long pixel_index1 = 0;
@@ -222,7 +227,7 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
     }
 
     // Re-stretch contrast for current canvas
-    if (contrastMode == ContrastMode::Canvas) {
+    if (contrastMode == ContrastMode::Canvas || colorMode == ColorMode::Seismic || colorMode == ColorMode::Viridis) {
         auto mm = std::minmax_element(bitmap_ch1.begin(), bitmap_ch1.end());
         min_pixel = static_cast<float>(*mm.first);
         max_pixel = static_cast<float >(*mm.second);
@@ -241,6 +246,16 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
                 while (val1 > 20)
                     val1 = val1 - 20;
                 res = QColor(cmap_red[val1], cmap_green[val1], cmap_blue[val1]);
+            } else if (colorMode == ColorMode::Seismic){
+                uint8_t result[3];
+                pixel_index1 = index_in_vector(used_channel_order, batch_index, x, y, 0, width, height,num_channels);
+                getSeismicColormap(loaded_data[pixel_index1], max_pixel/origin_slope+min_value, min_pixel/origin_slope+min_value, result);
+                res = QColor(result[0], result[1], result[2]);
+            } else if (colorMode == ColorMode::Viridis){
+                uint8_t result[3];
+                pixel_index1 = index_in_vector(used_channel_order, batch_index, x, y, 0, width, height,num_channels);
+                getViridisColormap(loaded_data[pixel_index1], max_pixel/origin_slope+min_value, min_pixel/origin_slope+min_value, result);
+                res = QColor(result[0], result[1], result[2]);
             } else {
                 if (colorMode == ColorMode::RGB && num_channels >= 3) {
                     int val2 = static_cast<uint8_t>(bitmap_ch2.at(x + (y * width)));
@@ -738,6 +753,23 @@ void MainWindow::on_color_BGR_triggered() {
     }
 }
 
+void MainWindow::on_color_Seismic_triggered() {
+    qInfo("Seismic Colormap triggered");
+    colorMode = ColorMode::Seismic;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        load_numpy_file(loaded_path);
+    }
+}
+
+void MainWindow::on_color_Viridis_triggered() {
+    qInfo("Viridis Colormap triggered");
+    colorMode = ColorMode::Viridis;
+    updateSettingsMenu();
+    if (loaded_path.length() > 3) {
+        load_numpy_file(loaded_path);
+    }
+}
 
 void MainWindow::on_contrast_array_triggered() {
     qInfo("Contrast mode triggered");
