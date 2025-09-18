@@ -32,6 +32,7 @@ list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/histogram.cpp)
 list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/ini.c)
 list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/INIReader.cpp)
 list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/keyeventhandler.cpp)
+list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/colormap.cpp)
 list(APPEND NumpyviewerLib_src ${PROJECT_SOURCE_DIR}/src/mainwindow.cpp)
 
 list(APPEND NumpyviewerLib_hdr ${PROJECT_SOURCE_DIR}/src/convertwindow.h)

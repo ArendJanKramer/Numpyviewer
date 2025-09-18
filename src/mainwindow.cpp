@@ -6,6 +6,7 @@
 #include <QtCharts>
 #include "graphics_view_zoom.h"
 #include <locale>
+#include "colormap.h"
 using namespace QtCharts;
 using namespace std;
 
@@ -243,10 +244,10 @@ void MainWindow::render_channel(int batch_index, int channel_index) {
                     val1 = val1 - 20;
                 res = QColor(cmap_red[val1], cmap_green[val1], cmap_blue[val1]);
             } else if (colorMode == ColorMode::Seismic){
-                if (contrastMode == ContrastMode::Canvas) {
-                    val1 = static_cast<uint8_t>((bitmap_ch1.at(x + (y * width)) - min_pixel) * slope);
-                }
-                res = QColor(val1, val1, val1);
+                uint8_t result[3];
+                pixel_index1 = index_in_vector(used_channel_order, batch_index, x, y, 0, width, height,num_channels);
+                getSeismicColormap(loaded_data[pixel_index1], max_pixel, min_pixel, result);
+                res = QColor(result[0], result[1], result[2]);
             } else {
                 if (colorMode == ColorMode::RGB && num_channels >= 3) {
                     int val2 = static_cast<uint8_t>(bitmap_ch2.at(x + (y * width)));

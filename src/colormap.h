@@ -1,5 +1,6 @@
 #ifndef COLORMAP_H
 #define COLORMAP_H
+#include <stdint.h>
 
 static int cmap_red[] = {0, 49, 107, 158, 198, 230, 253, 253, 253, 49, 116, 161, 199, 117, 158, 188, 218, 99, 150, 189, 217};
 static int cmap_green[] = {0, 130, 174, 202, 219, 85, 141, 174, 208, 163, 196, 217, 233, 107, 154, 189, 218, 99, 150, 189, 217};
@@ -24,5 +25,7 @@ inline unsigned long index_in_vector(ChannelOrder channelOrder, int n, int x, in
     }
 }
 
+void getSeismicColormap(float value, float max, float min, uint8_t* result);
+void getViridisColormap(float value, float max, float min, uint8_t* result);
 
 #endif // COLORMAP_H
