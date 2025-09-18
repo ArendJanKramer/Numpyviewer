@@ -80,6 +80,8 @@ private slots:
 
     void on_color_Seismic_triggered();
 
+    void on_color_Viridis_triggered();
+
     void loadSibling(int offset);
 
     void loadNext();

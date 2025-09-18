@@ -9,5 +9,7 @@
         <file>artwork/icon-bgr.svg</file>
         <file>artwork/icon-colormap.svg</file>
         <file>artwork/icon-greyscale.svg</file>
+        <file>artwork/seismic.png</file>
+        <file>artwork/viridis.png</file>
     </qresource>
 </RCC>
